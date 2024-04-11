@@ -35,11 +35,30 @@ spec = [
 ]
 
 
-class Squad():
+class Squad(core.Agent):
+    """
+    This class is the smallest unit. It can be organized into Platoons.
+    """
+    TYPE = 0
 
-    """
-    The squad class keeps track 
-    """
+    def __init__(self, local_id: int, rank: int, pt: dpt):
+        super().__init__(id=local_id, type=UninfectedSquad.TYPE, rank=rank)
+        self.pt = pt
+        self.meet_count = 0
+
+
+class UninfectedSquad(Squad):
+    def __init__(self, local_id: int, rank: int, pt: dpt):
+        super().__init__(id=local_id, type=UninfectedSquad.TYPE, rank=rank)
+
+
+class InfectedSquad(Squad):
+    # Set different types for uninfected and infected Squads (easier to log)
+    TYPE = 1
+
+    def __init__(self, local_id: int, rank: int, pt: dpt):
+        super().__init__(id=local_id, type=UninfectedSquad.TYPE, rank=rank)
+
 
 
 class Platoon(core.Agent):
