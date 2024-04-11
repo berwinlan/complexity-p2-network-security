@@ -1,0 +1,4 @@
+world.height: 886 # m
+world.width: 886  # m
+stop.at: 3600     # ticks, representing 12 hours
+squad.count: 80
