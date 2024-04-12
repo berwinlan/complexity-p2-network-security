@@ -74,24 +74,57 @@ class Model:
                                         names={'max_meets': 'max'}, rank=rank)       
         self.data_set = logging.ReducingDataSet(loggers, MPI.COMM_WORLD,
                                                 params['meet_log_file'])    
+        
+        # Log initial colocations at tick 0
+        for walker in self.context.agents():
+            walker.count_colocations(self.grid, self.meet_log)
+        self.data_set.log(0)
+        # Reset counts (it's per tick, not total)
+        self._reset_log_counters()
+        self.log_agents()
     
     def step(self):
-        pass
+        # Calls each agent's step function
+        for agent in self.context.agents():    
+            agent.step(self.grid)
+
+        # TODO: Synchronize sim across processes (5.2.5)
+        # self.context.synchronize(restore_agent)
+
+        # Get data for logging
+        for agent in self.context.agents():    
+            agent.count_colocations(self.grid, self.meet_log)
+
+        # Log data and reset counters
+        tick = self.runner.schedule.tick
+        self.data_set.log(tick)
+        self._reset_log_counters()  
 
     def log_agents(self):
+        """
+        Logs data about agents.
+        """
         tick = self.runner.schedule.tick
         for agent in self.context.agents():
             coords = space.ContinuousSpace.get_location(agent)
             self.agent_logger.log_row(tick, agent.id, coords.x, coords.y, coords.z)
 
+        # Write to file
         self.agent_logger.write()
 
     def at_end(self):
         """
         Performs any cleanup work after the simulation finishes running.
         """
-        # self.data_set.close()
+        self.data_set.close()
         self.agent_logger.close()
 
     def start(self):
         self.runner.execute()
+
+    def _reset_log_counters(self):
+        """
+        Reset log counters. Often used after logging each tick to avoid counting totals,
+        instead of counting per tick.
+        """
+        self.meet_log.max_meets = self.meet_log.min_meets = self.meet_log.total_meets = 0    

@@ -17,6 +17,8 @@ from repast4py.space import ContinuousPoint as cpt
 from repast4py.space import DiscretePoint as dpt
 from repast4py.space import BorderType, OccupancyType
 
+from loggers import MeetLog
+
 model = None
 
 
@@ -45,6 +47,43 @@ class Squad(core.Agent):
         super().__init__(id=local_id, type=UninfectedSquad.TYPE, rank=rank)
         self.pt = pt
         self.meet_count = 0
+
+    def step(self, grid):
+        pass
+
+    # TODO: Implement `save` and `restore` methods for agents to be able
+    # to synchronize contexts across processes
+
+    # From examples/rndwalk.py
+    def count_colocations(self, grid, meet_log: MeetLog):
+        # subtract self
+        num_here = grid.get_num_agents(self.pt) - 1
+        meet_log.total_meets += num_here
+        if num_here < meet_log.min_meets:
+            meet_log.min_meets = num_here
+        if num_here > meet_log.max_meets:
+            meet_log.max_meets = num_here
+        self.meet_count += num_here
+
+def restore_walker(walker_data: Tuple):    
+    """
+    Args:
+        walker_data: tuple containing the data returned by Walker.save.
+    """
+    # uid is a 3 element tuple: 0 is id, 1 is type, 2 is rank
+    uid = walker_data[0]    
+    pt_array = walker_data[2]
+    pt = DiscretePoint(pt_array[0], pt_array[1], 0)    
+
+    if uid in walker_cache:    
+        walker = walker_cache[uid]
+    else:    
+        walker = Walker(uid[0], uid[2], pt)
+        walker_cache[uid] = walker
+
+    walker.meet_count = walker_data[1]    
+    walker.pt = pt
+    return walker
 
 
 class UninfectedSquad(Squad):
