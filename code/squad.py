@@ -34,9 +34,8 @@ class Squad(core.Agent):
     """
 
     TYPE: defines agent type ID (we need it don't question it)
-    OFFSET: umpy array used in the agent behavior implementation to select the direction to move in. 
+    OFFSET: numpy array used in the agent behavior implementation to select the direction to move in. 
     See the discussion of the walk method below.
-    
 
     local_id: that uniquely identifies an agent
     rank: on which the agent is created. 
@@ -55,26 +54,19 @@ class Squad(core.Agent):
         Returns:
             The saved state of this Walker.
         """
-        return (self.uid, self.meet_count, self.pt.coordinates)
-
-    def walk(self, grid):
+        return (self.uid, self.meet_count, self.pt.coordinates, self.infected)
+    
+    def step(self, grid):
         """
-        randomly chooses an offset from its current location (self.pt), 
-        adds those offsets to its current location to create a new location, 
-        and then moves to that new location on the grid. The moved-to-location
-        becomes the agents new current location.
-
+        Walks the agent, then checks for infection.
         """
-
-        xy_dirs = random.default_rng.choice(Squad.OFFSETS, size=2)
-        self.pt = grid.move(
-            self, dpt(self.pt.x + xy_dirs[0], self.pt.y + xy_dirs[1], 0))
+        self._walk(grid)
+        self._infect(grid)
 
     def count_colocations(self, grid, meet_log: MeetLog):
         """
          gets the number of other agents at the current location,
          and updates both the agents individual running total of other agents met
-
         """
         num_here = grid.get_num_agents(self.pt) - 1
         meet_log.total_meets += num_here
@@ -84,6 +76,30 @@ class Squad(core.Agent):
             meet_log.max_meets = num_here
         self.meet_count += num_here
 
+    def _walk(self, grid):
+        """
+        randomly chooses an offset from its current location (self.pt), 
+        adds those offsets to its current location to create a new location, 
+        and then moves to that new location on the grid. The moved-to-location
+        becomes the agents new current location.
+
+        """
+        xy_dirs = random.default_rng.choice(Squad.OFFSETS, size=2)
+        self.pt = grid.move(
+            self, dpt(self.pt.x + xy_dirs[0], self.pt.y + xy_dirs[1], 0))
+        
+    def _infect(self, grid):
+        """
+        Infect agents.
+        """
+        # Get all the agents at this location
+        agents_here = grid.get_agents(self.pt)
+
+        # If any of them are infected, infect all agents
+        any_infected = any([agent.infected for agent in agents_here])
+        if any_infected:
+            for agent in agents_here:
+                agent.infected = True
 
 walker_cache = {}
 

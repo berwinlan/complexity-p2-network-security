@@ -110,7 +110,7 @@ class Model:
         #TODO: Integrate Platoons
         # Calls each agent's step function
         for agent in self.context.agents():
-            agent.walk(self.grid)
+            agent.step(self.grid)
 
         # TODO: Synchronize sim across processes (5.2.5)
         # self.context.synchronize(restore_agent)
