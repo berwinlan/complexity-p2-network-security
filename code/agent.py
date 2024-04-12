@@ -130,12 +130,3 @@ class Platoon(core.Agent):
                            direction[0], space_pt.y + direction[1])
 
         return (not alive, space_pt)
-
-
-@dataclass
-class Counts:
-    """Dataclass used by repast4py aggregate logging to record
-    the number of Humans and Zombies after each tick.
-    """
-    humans: int = 0
-    zombies: int = 0
