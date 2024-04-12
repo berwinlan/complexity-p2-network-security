@@ -17,4 +17,4 @@ if __name__ == "__main__":
     params = parameters.init_params(args.parameters_file, args.parameters)
     run(params)
 
-# Usage: mpirun -n 4 python model.py params.yaml
+# Usage: mpirun -n 4 python main.py params.yaml

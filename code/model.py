@@ -104,7 +104,6 @@ class Model:
             loggers, MPI.COMM_WORLD, params["meet_log_file"]
         )
 
-
         #TODO: Again, modify this so that we log initial co-locations of the squads through platoons 
         # Log initial colocations at tick 0
         for walker in self.context.agents():
@@ -115,11 +114,10 @@ class Model:
         self.log_agents()
 
     def step(self):
-
         #TODO: Integrate Platoons
         # Calls each agent's step function
         for agent in self.context.agents():
-            agent.step(self.grid)
+            agent.walk(self.grid)
 
         # TODO: Synchronize sim across processes (5.2.5)
         # self.context.synchronize(restore_agent)
