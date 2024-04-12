@@ -63,11 +63,6 @@ class Model:
         )
         self.context.add_projection(self.space)
 
-        # initialize the logging
-        self.agent_logger = logging.TabularLogger(
-            comm, params["agent_log_file"], ["tick", "agent_id", "x", "y", "z"]
-        )
-
         # Create agents
         rank = comm.Get_rank()  # Here, rank is a process rank
         # TODO: Logic for Hierarchial model
@@ -86,9 +81,7 @@ class Model:
 
         ## LOGGING
         self.agent_logger = logging.TabularLogger(
-            comm,
-            params["agent_log_file"],
-            ["tick", "agent_id", "agent_uid_rank", "meet_count"],
+            comm, params["agent_log_file"], ["tick", "agent_id", "meet_count", "x", "y", "z"]
         )
         self.meet_log = MeetLog()
         loggers = logging.create_loggers(
@@ -141,7 +134,7 @@ class Model:
         for agent in self.context.agents():
             coords = self.grid.get_location(agent)
             self.agent_logger.log_row(
-                tick, agent.id, coords.x, coords.y, coords.z
+                tick, agent.id, agent.meet_count, coords.x, coords.y, coords.z
             )
 
         # Write to file
