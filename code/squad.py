@@ -1,4 +1,4 @@
-from repast4py import core, random
+from repast4py import core, random, space
 import numpy as np
 from typing import Dict, Tuple
 from dataclasses import dataclass
@@ -44,20 +44,20 @@ class Squad(core.Agent):
 
     """
 
-    def __init__(self, local_id: int, rank: int, pt: dpt, infected=False):
+    def __init__(self, local_id: int, rank: int, pt: dpt, isInfected=False):
         super().__init__(id=local_id, type=Squad.TYPE, rank=rank)
         self.pt = pt
         self.meet_count = 0  # how many ppl they have met
-        self.infected = infected  # whether they're infected or not
+        self.isInfected = isInfected  # whether they're infected or not
 
     def save(self) -> Tuple:
         """Saves the state of this Walker as a Tuple.
         Returns:
             The saved state of this Walker.
         """
-        return (self.uid, self.meet_count, self.pt.coordinates, self.infected)
+        return (self.uid, self.meet_count, self.pt.coordinates, self.isInfected)
 
-    def step(self, grid):
+    def step(self, grid: space.SharedGrid):
         """
         Walks the agent, then checks for infection.
         """
@@ -77,31 +77,34 @@ class Squad(core.Agent):
             meet_log.max_meets = num_here
         self.meet_count += num_here
 
-    def _walk(self, grid):
+    def _walk(self, grid: space.SharedGrid):
         """
         randomly chooses an offset from its current location (self.pt),
         adds those offsets to its current location to create a new location,
         and then moves to that new location on the grid. The moved-to-location
         becomes the agents new current location.
-
         """
         xy_dirs = random.default_rng.choice(Squad.OFFSETS, size=2)
         self.pt = grid.move(
             self, dpt(self.pt.x + xy_dirs[0], self.pt.y + xy_dirs[1], 0)
         )
 
-    def _infect(self, grid):
+    def _infect(self, grid: space.SharedGrid):
         """
         Infect agents.
         """
+        # If this agent is in the InfectionRegion, it is infected
+        coords = grid.get_location(self)
+        if grid.infected_width[0] < coords.x < grid.infected_width[1]:
+            if grid.infected_height[0] < coords.y < grid.infected_height[1]:
+                self.isInfected = True
+
         # Get all the agents at this location
         agents_here = grid.get_agents(self.pt)
-
-        # If any of them are infected, infect all agents
-        any_infected = any([agent.infected for agent in agents_here])
+        # If any of them are infected, this agent is infected
+        any_infected = any([agent.isInfected for agent in agents_here])
         if any_infected:
-            for agent in agents_here:
-                agent.infected = True
+            self.isInfected = True
 
 
 walker_cache = {}

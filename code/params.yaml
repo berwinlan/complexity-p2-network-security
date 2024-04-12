@@ -4,3 +4,5 @@ stop.at: 3600     # ticks, representing 12 hours
 squad.count: 80
 meet_log_file: './out/meet_log.csv'
 agent_log_file: './out/agent_log.csv'
+InfectionRegion.height: 25
+InfectionRegion.width: 25

@@ -1,4 +1,5 @@
 from mpi4py import MPI
+import random
 
 from repast4py import space, schedule, logging
 from repast4py import context as ctx
@@ -52,6 +53,37 @@ class Model:
         )
         # Add projection to context
         self.context.add_projection(self.grid)
+
+        # Add an InfectionRegion
+        width_start = random.randint(
+            0, params["world.width"] - params["InfectionRegion.width"]
+        )
+        height_start = random.randint(
+            0, params["world.height"] - params["InfectionRegion.height"]
+        )
+        self.grid.infected_width = (
+            width_start,
+            width_start + params["InfectionRegion.width"],
+        )
+        self.grid.infected_height = (
+            height_start,
+            height_start + params["InfectionRegion.height"],
+        )
+        # infectionRegion = space.BoundingBox(
+        #     width_start, width_start + params["InfectionRegion.width"], height_start, height_start + params["InfectionRegion.height"], 0, 0
+        # )
+        # print(width_start, width_start + params["InfectionRegion.width"], height_start, height_start + params["InfectionRegion.height"])
+        # self.infectionRegion = space.SharedGrid(
+        #     name="infectionRegion",
+        #     bounds=infectionRegion,
+        #     borders=space.BorderType.Sticky,
+        #     occupancy=space.OccupancyType.Multiple,
+        #     buffer_size=2,
+        #     comm=comm,
+        # )
+        # self.context.add_projection(self.infectionRegion)
+
+        # Stuff that Miles added
         self.space = space.SharedCSpace(
             "space",
             bounds=box,
@@ -145,11 +177,11 @@ class Model:
             self.agent_logger.log_row(
                 tick,
                 agent.id,
-                agent.type,         # 0 is Squad, 1 is Platoon
+                agent.type,  # 0 is Squad, 1 is Platoon
                 agent.meet_count,
                 coords.x,
                 coords.y,
-                agent.infected,
+                agent.isInfected,
             )
 
         # Write to file
