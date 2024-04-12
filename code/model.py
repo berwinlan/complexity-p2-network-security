@@ -62,10 +62,6 @@ class Model:
             tree_threshold=100,
         )
         self.context.add_projection(self.space)
-        self.continuous_space = space.ContinuousSpace(
-            "grid",
-            box,
-        )  # FINISH
 
         # initialize the logging
         self.agent_logger = logging.TabularLogger(
@@ -145,7 +141,7 @@ class Model:
 
         #TODO: Again, integrate platoon
         for agent in self.context.agents():
-            coords = space.ContinuousSpace.get_location(agent)
+            coords = self.grid.get_location(agent)
             self.agent_logger.log_row(
                 tick, agent.id, coords.x, coords.y, coords.z
             )
