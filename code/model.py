@@ -8,6 +8,7 @@ import repast4py
 from repast4py.space import DiscretePoint as dpt
 
 from agent import Squad
+from loggers import MeetLog
 
 class Model:
     def __init__(self, comm: MPI.Intracomm, params: dict):
@@ -49,7 +50,21 @@ class Model:
             # Create Squad, add to context, and move it to the point
             squad = Squad(i, rank, pt)    
             self.context.add(squad)    
-            self.grid.move(squad, pt) 
+            self.grid.move(squad, pt)
+
+        ## LOGGING
+        self.agent_logger = logging.TabularLogger(comm, params['agent_log_file'],
+                                          ['tick', 'agent_id', 'agent_uid_rank',
+                                          'meet_count'])    
+        self.meet_log = MeetLog()    
+        loggers = logging.create_loggers(self.meet_log, op=MPI.SUM,
+                                        names={'total_meets': 'total'}, rank=rank)    
+        loggers += logging.create_loggers(self.meet_log, op=MPI.MIN,
+                                        names={'min_meets': 'min'}, rank=rank)       
+        loggers += logging.create_loggers(self.meet_log, op=MPI.MAX,
+                                        names={'max_meets': 'max'}, rank=rank)       
+        self.data_set = logging.ReducingDataSet(loggers, MPI.COMM_WORLD,
+                                                params['meet_log_file'])    
     
     def step(self):
         pass
