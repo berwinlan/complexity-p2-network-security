@@ -68,8 +68,7 @@ class Model:
         # TODO: Logic for Hierarchial model
         rng = repast4py.random.default_rng
 
-
-        #TODO: Integrate Platoons which initalizes the squads
+        # TODO: Integrate Platoons which initalizes the squads
 
         for i in range(params["squad.count"]):
             # Generate a random point for the Squad's origin
@@ -81,7 +80,17 @@ class Model:
 
         ## LOGGING
         self.agent_logger = logging.TabularLogger(
-            comm, params["agent_log_file"], ["tick", "agent_id", "agent_type", "meet_count", "x", "y", "infected"]
+            comm,
+            params["agent_log_file"],
+            [
+                "tick",
+                "agent_id",
+                "agent_type",
+                "meet_count",
+                "x",
+                "y",
+                "infected",
+            ],
         )
         self.meet_log = MeetLog()
         loggers = logging.create_loggers(
@@ -97,7 +106,7 @@ class Model:
             loggers, MPI.COMM_WORLD, params["meet_log_file"]
         )
 
-        #TODO: Again, modify this so that we log initial co-locations of the squads through platoons 
+        # TODO: Again, modify this so that we log initial co-locations of the squads through platoons
         # Log initial colocations at tick 0
         for walker in self.context.agents():
             walker.count_colocations(self.grid, self.meet_log)
@@ -130,12 +139,17 @@ class Model:
         """
         tick = self.runner.schedule.tick
 
-        #TODO: Again, integrate platoon
+        # TODO: Again, integrate platoon
         for agent in self.context.agents():
             coords = self.grid.get_location(agent)
-            # Agent.TYPE: 0 is Squad, 1 is Platoon
             self.agent_logger.log_row(
-                tick, agent.id, agent.type, agent.meet_count, coords.x, coords.y, agent.infected
+                tick,
+                agent.id,
+                agent.type,         # 0 is Squad, 1 is Platoon
+                agent.meet_count,
+                coords.x,
+                coords.y,
+                agent.infected,
             )
 
         # Write to file

@@ -8,8 +8,9 @@ from repast4py import core, random
 from repast4py.space import DiscretePoint as dpt
 
 
-#Our own files
+# Our own files
 from loggers import MeetLog
+
 
 @numba.jit((int64[:], int64[:]), nopython=True)
 def is_equal(a1, a2):
@@ -17,12 +18,12 @@ def is_equal(a1, a2):
 
 
 spec = [
-    ('mo', int32[:]),
-    ('no', int32[:]),
-    ('xmin', int32),
-    ('ymin', int32),
-    ('ymax', int32),
-    ('xmax', int32)
+    ("mo", int32[:]),
+    ("no", int32[:]),
+    ("xmin", int32),
+    ("ymin", int32),
+    ("ymax", int32),
+    ("xmax", int32),
 ]
 
 
@@ -55,7 +56,7 @@ class Squad(core.Agent):
             The saved state of this Walker.
         """
         return (self.uid, self.meet_count, self.pt.coordinates, self.infected)
-    
+
     def step(self, grid):
         """
         Walks the agent, then checks for infection.
@@ -65,8 +66,8 @@ class Squad(core.Agent):
 
     def count_colocations(self, grid, meet_log: MeetLog):
         """
-         gets the number of other agents at the current location,
-         and updates both the agents individual running total of other agents met
+        gets the number of other agents at the current location,
+        and updates both the agents individual running total of other agents met
         """
         num_here = grid.get_num_agents(self.pt) - 1
         meet_log.total_meets += num_here
@@ -78,16 +79,17 @@ class Squad(core.Agent):
 
     def _walk(self, grid):
         """
-        randomly chooses an offset from its current location (self.pt), 
-        adds those offsets to its current location to create a new location, 
+        randomly chooses an offset from its current location (self.pt),
+        adds those offsets to its current location to create a new location,
         and then moves to that new location on the grid. The moved-to-location
         becomes the agents new current location.
 
         """
         xy_dirs = random.default_rng.choice(Squad.OFFSETS, size=2)
         self.pt = grid.move(
-            self, dpt(self.pt.x + xy_dirs[0], self.pt.y + xy_dirs[1], 0))
-        
+            self, dpt(self.pt.x + xy_dirs[0], self.pt.y + xy_dirs[1], 0)
+        )
+
     def _infect(self, grid):
         """
         Infect agents.
@@ -100,6 +102,7 @@ class Squad(core.Agent):
         if any_infected:
             for agent in agents_here:
                 agent.infected = True
+
 
 walker_cache = {}
 
