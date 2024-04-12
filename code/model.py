@@ -81,7 +81,7 @@ class Model:
 
         ## LOGGING
         self.agent_logger = logging.TabularLogger(
-            comm, params["agent_log_file"], ["tick", "agent_id", "meet_count", "x", "y"]
+            comm, params["agent_log_file"], ["tick", "agent_id", "agent_type", "meet_count", "x", "y", "infected"]
         )
         self.meet_log = MeetLog()
         loggers = logging.create_loggers(
@@ -107,7 +107,7 @@ class Model:
         self.log_agents()
 
     def step(self):
-        #TODO: Integrate Platoons
+        # TODO: Integrate Platoons
         # Calls each agent's step function
         for agent in self.context.agents():
             agent.step(self.grid)
@@ -133,8 +133,9 @@ class Model:
         #TODO: Again, integrate platoon
         for agent in self.context.agents():
             coords = self.grid.get_location(agent)
+            # Agent.TYPE: 0 is Squad, 1 is Platoon
             self.agent_logger.log_row(
-                tick, agent.id, agent.meet_count, coords.x, coords.y
+                tick, agent.id, agent.type, agent.meet_count, coords.x, coords.y, agent.infected
             )
 
         # Write to file

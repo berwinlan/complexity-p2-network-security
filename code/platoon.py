@@ -17,15 +17,17 @@ class Platoon():
     """
     pt: grid.get_random_local_pt(rng)
     """
+    TYPE = 1
 
     def __init__(self, squad_num: int, comm: MPI.Intracomm, rank, pt, grid, infected=False) -> None:
         # create the context to hold the squads
         self.context = ctx.SharedContext(comm)
         for i in range(squad_num):
-
             squad = Squad(i, rank, pt)
             self.context.add(squad)
             grid.move(squad, pt)
+        
+        self.type = Platoon.TYPE
 
     def step(self, grid, meet_log):
         for squad in self.context.agents():
