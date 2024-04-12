@@ -81,7 +81,7 @@ class Model:
 
         ## LOGGING
         self.agent_logger = logging.TabularLogger(
-            comm, params["agent_log_file"], ["tick", "agent_id", "meet_count", "x", "y", "z"]
+            comm, params["agent_log_file"], ["tick", "agent_id", "meet_count", "x", "y"]
         )
         self.meet_log = MeetLog()
         loggers = logging.create_loggers(
@@ -134,7 +134,7 @@ class Model:
         for agent in self.context.agents():
             coords = self.grid.get_location(agent)
             self.agent_logger.log_row(
-                tick, agent.id, agent.meet_count, coords.x, coords.y, coords.z
+                tick, agent.id, agent.meet_count, coords.x, coords.y
             )
 
         # Write to file
