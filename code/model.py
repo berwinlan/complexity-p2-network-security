@@ -1,16 +1,19 @@
 from mpi4py import MPI
-import numpy as np
-from dataclasses import dataclass
 
-from repast4py import core, random, space, schedule, logging, parameters
+from repast4py import space, schedule, logging
 from repast4py import context as ctx
 import repast4py
-from repast4py.space import DiscretePoint as dpt
 
 from agent import Squad
 from loggers import MeetLog
 
 class Model:
+    """
+    The Model class encapsulates the simulation, and is
+    responsible for initialization (scheduling events, creating agents,
+    and the grid the agents inhabit), and the overall iterating
+    behavior of the model.
+    """
     def __init__(self, comm: MPI.Intracomm, params: dict):
         ## SCHEDULING
         # Initialize scheduler

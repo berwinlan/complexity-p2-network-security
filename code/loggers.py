@@ -1,9 +1,7 @@
 """
 Repast4py data logging.
 """
-
 from dataclasses import dataclass
-from repast4py import logging
 
 @dataclass
 class MeetLog:
