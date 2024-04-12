@@ -1,4 +1,3 @@
-
 # TODO: replace this run code
 
 from repast4py import parameters
@@ -6,9 +5,11 @@ from mpi4py import MPI
 
 from model import Model
 
+
 def run(params: dict):
     model = Model(MPI.COMM_WORLD, params)
     model.start()
+
 
 if __name__ == "__main__":
     parser = parameters.create_args_parser()
