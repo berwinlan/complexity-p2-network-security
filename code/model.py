@@ -4,7 +4,8 @@ from repast4py import space, schedule, logging
 from repast4py import context as ctx
 import repast4py
 
-from agent import Squad
+from squad import Squad
+from platoon import Platoon
 from loggers import MeetLog
 
 
@@ -75,6 +76,10 @@ class Model:
         rank = comm.Get_rank()  # Here, rank is a process rank
         # TODO: Logic for Hierarchial model
         rng = repast4py.random.default_rng
+
+
+        #TODO: Integrate Platoons which initalizes the squads
+
         for i in range(params["squad.count"]):
             # Generate a random point for the Squad's origin
             pt = self.grid.get_random_local_pt(rng)
@@ -103,6 +108,8 @@ class Model:
             loggers, MPI.COMM_WORLD, params["meet_log_file"]
         )
 
+
+        #TODO: Again, modify this so that we log initial co-locations of the squads through platoons 
         # Log initial colocations at tick 0
         for walker in self.context.agents():
             walker.count_colocations(self.grid, self.meet_log)
@@ -112,6 +119,8 @@ class Model:
         self.log_agents()
 
     def step(self):
+
+        #TODO: Integrate Platoons
         # Calls each agent's step function
         for agent in self.context.agents():
             agent.step(self.grid)
@@ -133,6 +142,8 @@ class Model:
         Logs data about agents.
         """
         tick = self.runner.schedule.tick
+
+        #TODO: Again, integrate platoon
         for agent in self.context.agents():
             coords = space.ContinuousSpace.get_location(agent)
             self.agent_logger.log_row(
