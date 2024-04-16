@@ -69,31 +69,6 @@ class Model:
             height_start,
             height_start + params["InfectionRegion.height"],
         )
-        # infectionRegion = space.BoundingBox(
-        #     width_start, width_start + params["InfectionRegion.width"], height_start, height_start + params["InfectionRegion.height"], 0, 0
-        # )
-        # print(width_start, width_start + params["InfectionRegion.width"], height_start, height_start + params["InfectionRegion.height"])
-        # self.infectionRegion = space.SharedGrid(
-        #     name="infectionRegion",
-        #     bounds=infectionRegion,
-        #     borders=space.BorderType.Sticky,
-        #     occupancy=space.OccupancyType.Multiple,
-        #     buffer_size=2,
-        #     comm=comm,
-        # )
-        # self.context.add_projection(self.infectionRegion)
-
-        # Stuff that Miles added
-        self.space = space.SharedCSpace(
-            "space",
-            bounds=box,
-            borders=space.BorderType.Sticky,
-            occupancy=space.OccupancyType.Multiple,
-            buffer_size=2,
-            comm=comm,
-            tree_threshold=100,
-        )
-        self.context.add_projection(self.space)
 
         # Create agents
         rank = comm.Get_rank()  # Here, rank is a process rank
@@ -198,8 +173,8 @@ class Model:
                 coords.x,
                 coords.y,
                 agent.isInfected,
-
             )
+            print(tick, agent.id, agent.type, agent.meet_count, coords.x, coords.y, agent.isInfected)
 
         # Write to file
         self.agent_logger.write()
