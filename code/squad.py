@@ -29,23 +29,18 @@ spec = [
 
 
 class Squad(core.Agent):
-
-    TYPE = 0
     OFFSETS = np.array([-1, 1])
 
     """
-
-    TYPE: defines agent type ID (we need it don't question it)
-    OFFSET: numpy array used in the agent behavior implementation to select the direction to move in. 
+    OFFSETS: numpy array used in the agent behavior implementation to select the direction to move in. 
     See the discussion of the walk method below.
 
     local_id: that uniquely identifies an agent
     rank: on which the agent is created. 
     pt: current location (x, y)
-
     """
 
-    def __init__(self, local_id: int, platoon_num: int, rank: int, pt: dpt, isInfected=False):
+    def __init__(self, local_id: int, platoon_num: int, rank: int, pt: dpt, isInfected: bool=False):
         super().__init__(id=local_id, type=platoon_num, rank=rank)
         self.pt = pt
         self.meet_count = 0  # how many ppl they have met
