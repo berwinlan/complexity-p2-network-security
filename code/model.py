@@ -102,13 +102,17 @@ class Model:
 
         # TODO: Integrate Platoons which initalizes the squads
 
-        for i in range(params["squad.count"]):
-            # Generate a random point for the Squad's origin
-            pt = self.grid.get_random_local_pt(rng)
-            # Create Squad, add to context, and move it to the point
-            squad = Squad(i, rank, pt)
-            self.context.add(squad)
-            self.grid.move(squad, pt)
+        temp_count =0
+        for platoon_id in range(params["platoon.count"]):
+            
+            for i in range(params["squad.count"]):
+                # Generate a random point for the Squad's origin
+                pt = self.grid.get_random_local_pt(rng)
+                # Create Squad, add to context, and move it to the point
+                squad = Squad(temp_count, rank, pt, platoon_id)
+                self.context.add(squad)
+                self.grid.move(squad, pt)
+                temp_count+=1
 
         ## LOGGING
         self.agent_logger = logging.TabularLogger(
