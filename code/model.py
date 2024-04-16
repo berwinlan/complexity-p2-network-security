@@ -84,7 +84,7 @@ class Model:
             current_platoon = Platoon(platoon_id, pt)
             self.platoons.append(current_platoon)
 
-            for i in range(params["squad.count"]):
+            for _ in range(params["squad.count"]):
                 # Generate a random point for the Squad's origin
                 new_x = current_platoon.get_xy(
                 )[0] + int(normal(params["noise.center"], params["noise.scale"]))
@@ -94,7 +94,7 @@ class Model:
                 points = space.DiscretePoint(new_x, new_y)
 
                 # Create Squad, add to context, and move it to the point
-                squad = Squad(temp_count, platoon_id, rank, points, platoon_id)
+                squad = Squad(temp_count, platoon_id, rank, points, isInfected=False)
                 self.context.add(squad)
                 self.grid.move(squad, points)
                 temp_count += 1
@@ -106,7 +106,7 @@ class Model:
             [
                 "tick",
                 "agent_id",
-                "agent_type",
+                "agent_platoon",
                 "meet_count",
                 "x",
                 "y",
@@ -139,7 +139,6 @@ class Model:
         # Calls each agent's step function
         for platoon in self.platoons:
             platoon.move()
-
 
         for agent in self.context.agents():
             agent.step(self.grid, self.platoons[agent.type].get_xy())
@@ -175,10 +174,10 @@ class Model:
                 coords.y,
                 agent.isInfected,
             )
-            print(tick, agent.id, agent.type, agent.meet_count, coords.x, coords.y, agent.isInfected)
 
         # Write to file
         self.agent_logger.write()
+        raise Exception
 
     def at_end(self):
         """
