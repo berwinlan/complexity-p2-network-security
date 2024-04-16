@@ -14,6 +14,9 @@ def num_infected(agent_log_path: str):
     # TODO: Filter based on type of spread
     grouped = df.groupby('tick').sum().reset_index()
     plt.plot(grouped['tick'], grouped['infected'])
+    plt.title("Spread of Malware over Time")
+    plt.xlabel("Ticks")
+    plt.ylabel("# of infected squads")
     plt.show()
     
 
