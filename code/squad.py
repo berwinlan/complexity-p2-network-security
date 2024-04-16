@@ -6,6 +6,7 @@ import numba
 from numba import int32, int64
 from repast4py import core, random
 from repast4py.space import DiscretePoint as dpt
+from numpy.random import normal
 
 
 # Our own files
@@ -44,8 +45,8 @@ class Squad(core.Agent):
 
     """
 
-    def __init__(self, local_id: int, rank: int, pt: dpt, isInfected=False):
-        super().__init__(id=local_id, type=Squad.TYPE, rank=rank)
+    def __init__(self, local_id: int, platoon_num: int, rank: int, pt: dpt, isInfected=False):
+        super().__init__(id=local_id, type=platoon_num, rank=rank)
         self.pt = pt
         self.meet_count = 0  # how many ppl they have met
         self.isInfected = isInfected  # whether they're infected or not
@@ -57,11 +58,19 @@ class Squad(core.Agent):
         """
         return (self.uid, self.meet_count, self.pt.coordinates, self.isInfected)
 
-    def step(self, grid: space.SharedGrid):
+    def step(self, grid: space.SharedGrid, xy_dirs):
         """
         Walks the agent, then checks for infection.
         """
-        self._walk(grid)
+        center = 0
+        scale = 1
+
+        noise_x = int(normal(center, scale)) + xy_dirs[0]
+        noise_y = int(normal(center, scale)) + xy_dirs[1]
+
+
+        self._walk(grid, [noise_x, noise_y])
+
         self._infect(grid)
 
     def count_colocations(self, grid, meet_log: MeetLog):
@@ -77,17 +86,18 @@ class Squad(core.Agent):
             meet_log.max_meets = num_here
         self.meet_count += num_here
 
-    def _walk(self, grid: space.SharedGrid):
+    def _walk(self, grid: space.SharedGrid, xy_dirs):
         """
         randomly chooses an offset from its current location (self.pt),
         adds those offsets to its current location to create a new location,
         and then moves to that new location on the grid. The moved-to-location
         becomes the agents new current location.
         """
-        xy_dirs = random.default_rng.choice(Squad.OFFSETS, size=2)
         self.pt = grid.move(
             self, dpt(self.pt.x + xy_dirs[0], self.pt.y + xy_dirs[1], 0)
         )
+
+
 
     def _infect(self, grid: space.SharedGrid):
         """

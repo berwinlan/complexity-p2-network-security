@@ -4,7 +4,7 @@ import random
 from repast4py import space, schedule, logging
 from repast4py import context as ctx
 import repast4py
-
+from numpy.random import normal
 from squad import Squad
 from platoon import Platoon
 from loggers import MeetLog
@@ -19,7 +19,7 @@ class Model:
     """
 
     def __init__(self, comm: MPI.Intracomm, params: dict):
-        ## SCHEDULING
+        # SCHEDULING
         # Initialize scheduler
         self.runner = schedule.init_schedule_runner(comm)
 
@@ -33,11 +33,11 @@ class Model:
         # Clean up
         schedule.runner().schedule_end_event(self.at_end)
 
-        ## CONTEXT
+        # CONTEXT
         # Create context to hold agents and manage cross process synchronization
         self.context = ctx.SharedContext(comm)
 
-        ## PROJECTION
+        # PROJECTION
         # Define bounds
         box = space.BoundingBox(
             0, params["world.width"], 0, params["world.height"], 0, 0
@@ -100,21 +100,31 @@ class Model:
         # TODO: Logic for Hierarchial model
         rng = repast4py.random.default_rng
 
-        # TODO: Integrate Platoons which initalizes the squads
+        # Integrate Platoons which initalizes the squads
+        self.platoons = []
 
-        temp_count =0
+        temp_count = 0
         for platoon_id in range(params["platoon.count"]):
-            
+            pt = self.grid.get_random_local_pt(rng)
+            current_platoon = Platoon(platoon_id, pt)
+            self.platoons.append(current_platoon)
+
             for i in range(params["squad.count"]):
                 # Generate a random point for the Squad's origin
-                pt = self.grid.get_random_local_pt(rng)
-                # Create Squad, add to context, and move it to the point
-                squad = Squad(temp_count, rank, pt, platoon_id)
-                self.context.add(squad)
-                self.grid.move(squad, pt)
-                temp_count+=1
+                new_x = current_platoon.get_xy(
+                )[0] + int(normal(params["noise.center"], params["noise.scale"]))
+                new_y = current_platoon.get_xy(
+                )[1] + int(normal(params["noise.center"], params["noise.scale"]))
 
-        ## LOGGING
+                points = space.DiscretePoint(new_x, new_y)
+
+                # Create Squad, add to context, and move it to the point
+                squad = Squad(temp_count, platoon_id, rank, points, platoon_id)
+                self.context.add(squad)
+                self.grid.move(squad, points)
+                temp_count += 1
+
+        # LOGGING
         self.agent_logger = logging.TabularLogger(
             comm,
             params["agent_log_file"],
@@ -142,7 +152,6 @@ class Model:
             loggers, MPI.COMM_WORLD, params["meet_log_file"]
         )
 
-        # TODO: Again, modify this so that we log initial co-locations of the squads through platoons
         # Log initial colocations at tick 0
         for walker in self.context.agents():
             walker.count_colocations(self.grid, self.meet_log)
@@ -152,10 +161,12 @@ class Model:
         self.log_agents()
 
     def step(self):
-        # TODO: Integrate Platoons
         # Calls each agent's step function
+        for platoon in self.platoons:
+            platoon.move()
+
         for agent in self.context.agents():
-            agent.step(self.grid)
+            agent.step(self.grid, self.platoons[agent.type].get_xy())
 
         # TODO: Synchronize sim across processes (5.2.5)
         # self.context.synchronize(restore_agent)
@@ -182,11 +193,12 @@ class Model:
             self.agent_logger.log_row(
                 tick,
                 agent.id,
-                agent.type,  # 0 is Squad, 1 is Platoon
+                agent.type,  # Platoon number
                 agent.meet_count,
                 coords.x,
                 coords.y,
                 agent.isInfected,
+
             )
 
         # Write to file
