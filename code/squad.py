@@ -67,9 +67,11 @@ class Squad(core.Agent):
 
         noise_x = int(normal(center, scale)) + xy_dirs[0]
         noise_y = int(normal(center, scale)) + xy_dirs[1]
-
-
+        x= self.pt.x
+        y = self.pt.y
         self._walk(grid, [noise_x, noise_y])
+        # print(x, y, noise_x, noise_y, self.pt.x, self.pt.y)
+
 
         self._infect(grid)
 
@@ -93,9 +95,12 @@ class Squad(core.Agent):
         and then moves to that new location on the grid. The moved-to-location
         becomes the agents new current location.
         """
+        print(0, self.pt.x, self.pt.y,  xy_dirs[0], xy_dirs[1])
         self.pt = grid.move(
             self, dpt(self.pt.x + xy_dirs[0], self.pt.y + xy_dirs[1], 0)
         )
+        print(1, self.pt.x, self.pt.y,  xy_dirs[0], xy_dirs[1])
+
 
 
 

@@ -1,8 +1,8 @@
 world.height: 886 # m
 world.width: 886  # m
 stop.at: 40     # ticks, representing 12 hours
-platoon.count: 3
-squad.count: 5
+platoon.count: 1
+squad.count: 1
 meet_log_file: './out/meet_log.csv'
 agent_log_file: './out/agent_log.csv'
 InfectionRegion.height: 25

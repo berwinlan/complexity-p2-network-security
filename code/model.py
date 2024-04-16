@@ -165,6 +165,7 @@ class Model:
         for platoon in self.platoons:
             platoon.move()
 
+
         for agent in self.context.agents():
             agent.step(self.grid, self.platoons[agent.type].get_xy())
 
