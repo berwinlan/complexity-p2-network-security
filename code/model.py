@@ -177,7 +177,6 @@ class Model:
 
         # Write to file
         self.agent_logger.write()
-        raise Exception
 
     def at_end(self):
         """
