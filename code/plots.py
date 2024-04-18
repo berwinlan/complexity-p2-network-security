@@ -4,23 +4,39 @@ import matplotlib.pyplot as plt
 
 
 # Number of infected squads vs. time
-def num_infected(agent_log_path: str):
+def num_infected(random_walk_path: str, random_waypoint_path: str):
     """
     Args:
         agent_log_path: Path to the file created by the agent_logger.
     """
-    df = pd.read_csv(agent_log_path)
+    # Plot random walk
+    df = pd.read_csv(random_walk_path)
 
     # Sum `infected` Trues on each tick
     # TODO: Filter based on type of spread
     grouped = df.groupby("tick").sum().reset_index()
-    plt.plot(grouped["tick"], grouped["infected"])
+    plt.plot(
+        grouped["tick"], grouped["infected"], "--", color="orange", linewidth=3
+    )
+
+    # Plot random waypoint
+    df = pd.read_csv(random_waypoint_path)
+
+    # Sum `infected` Trues on each tick
+    # TODO: Filter based on type of spread
+    grouped = df.groupby("tick").sum().reset_index()
+    plt.plot(
+        grouped["tick"], grouped["infected"], ":", color="gray", linewidth=3
+    )
+
     plt.title("Spread of Malware over Time")
     plt.xlabel("Ticks")
     plt.ylabel("# of infected squads")
+    plt.legend(["Random walk", "Random waypoint"])
     plt.show()
 
 
 if __name__ == "__main__":
-    agent_log_path = "out/agent_log.csv"
-    num_infected(agent_log_path)
+    rwalk = "out/agent_log_20.csv"
+    rway = "out/agent_log_19.csv"
+    num_infected(rwalk, rway)
