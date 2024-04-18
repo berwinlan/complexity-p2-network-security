@@ -152,25 +152,4 @@ class Squad(core.Agent):
             self.isInfected = True
 
 
-walker_cache = {}
 
-
-def restore_walker(walker_data: Tuple):
-    """
-    Args:
-        walker_data: tuple containing the data returned by Walker.save.
-    """
-    # uid is a 3 element tuple: 0 is id, 1 is type, 2 is rank
-    uid = walker_data[0]
-    pt_array = walker_data[2]
-    pt = dpt(pt_array[0], pt_array[1], 0)
-
-    if uid in walker_cache:
-        walker = walker_cache[uid]
-    else:
-        walker = Walker(uid[0], uid[2], pt)
-        walker_cache[uid] = walker
-
-    walker.meet_count = walker_data[1]
-    walker.pt = pt
-    return walker
