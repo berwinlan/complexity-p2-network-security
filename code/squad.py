@@ -40,11 +40,19 @@ class Squad(core.Agent):
     pt: current location (x, y)
     """
 
-    def __init__(self, local_id: int, platoon_num: int, rank: int, pt: dpt, isInfected: bool=False):
+    def __init__(
+        self,
+        local_id: int,
+        platoon_num: int,
+        rank: int,
+        pt: dpt,
+        isInfected: bool = False,
+    ):
         super().__init__(id=local_id, type=platoon_num, rank=rank)
         self.pt = pt
         self.meet_count = 0  # how many ppl they have met
         self.isInfected = isInfected  # whether they're infected or not
+        self.waypoint = dpt(0, 0)  # Goal waypoint coordinates
 
     def save(self) -> Tuple:
         """Saves the state of this Walker as a Tuple.
@@ -53,7 +61,7 @@ class Squad(core.Agent):
         """
         return (self.uid, self.meet_count, self.pt.coordinates, self.isInfected)
 
-    def step(self, grid: space.SharedGrid, xy_dirs):
+    def step(self, grid: space.SharedGrid, xy_dirs) -> None:
         """
         Walks the agent, then checks for infection.
         """
@@ -62,15 +70,21 @@ class Squad(core.Agent):
 
         noise_x = int(normal(center, scale)) + xy_dirs[0]
         noise_y = int(normal(center, scale)) + xy_dirs[1]
-        x= self.pt.x
-        y = self.pt.y
-        self._walk(grid, [noise_x, noise_y])
-        # print(x, y, noise_x, noise_y, self.pt.x, self.pt.y)
 
+        match grid.spread:
+            case "random_walk":
+                self._random_walk(grid, [noise_x, noise_y])
+            case "random_waypoint":
+                self._random_waypoint(grid)
+            case "hierarchical":
+                self._hierarchical(grid)
+            case _:
+                raise Exception(f"{grid.spread} is an invalid type of spread.")
 
+        # Infect agents
         self._infect(grid)
 
-    def count_colocations(self, grid, meet_log: MeetLog):
+    def count_colocations(self, grid, meet_log: MeetLog) -> None:
         """
         gets the number of other agents at the current location,
         and updates both the agents individual running total of other agents met
@@ -83,23 +97,44 @@ class Squad(core.Agent):
             meet_log.max_meets = num_here
         self.meet_count += num_here
 
-    def _walk(self, grid: space.SharedGrid, xy_dirs):
+    def _random_walk(self, grid: space.SharedGrid, xy_dirs) -> None:
         """
         randomly chooses an offset from its current location (self.pt),
         adds those offsets to its current location to create a new location,
         and then moves to that new location on the grid. The moved-to-location
         becomes the agents new current location.
         """
-        print(0, self.pt.x, self.pt.y,  xy_dirs[0], xy_dirs[1])
         self.pt = grid.move(
             self, dpt(self.pt.x + xy_dirs[0], self.pt.y + xy_dirs[1], 0)
         )
-        print(1, self.pt.x, self.pt.y,  xy_dirs[0], xy_dirs[1])
 
+    def _random_waypoint(self, grid: space.SharedGrid) -> None:
+        """
+        Selects a random point and moves in that direction until it has reached it.
+        """
+        # If this squad has reached its waypoint or needs a new one, set new waypoint
+        if (self in grid.get_agents(self.waypoint)) or (
+            self.waypoint.x == 0 and self.waypoint.y == 0
+        ):
+            self.waypoint = grid.get_random_local_pt(random.default_rng)
 
+        # Continue walking towards waypoint, using the shortest path
+        x_movement = self.waypoint.x - self.pt.x
+        y_movement = self.waypoint.y - self.pt.y
+        normalizer = y_movement if y_movement > x_movement else x_movement
+        # Normalize to move at most 1
+        x_movement /= normalizer
+        y_movement /= normalizer
+        # Move
+        self.pt = grid.move(
+            self,
+            dpt(int(self.pt.x + x_movement), int(self.pt.y + y_movement), 0),
+        )
 
+    def _hierarchical(self, grid: space.SharedGrid):
+        pass
 
-    def _infect(self, grid: space.SharedGrid):
+    def _infect(self, grid: space.SharedGrid) -> None:
         """
         Infect agents.
         """

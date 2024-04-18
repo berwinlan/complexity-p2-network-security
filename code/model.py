@@ -70,6 +70,9 @@ class Model:
             height_start + params["InfectionRegion.height"],
         )
 
+        # Set spread type
+        self.grid.spread = params["spread"]
+
         # Create agents
         rank = comm.Get_rank()  # Here, rank is a process rank
         # TODO: Logic for Hierarchial model
@@ -86,15 +89,19 @@ class Model:
 
             for _ in range(params["squad.count"]):
                 # Generate a random point for the Squad's origin
-                new_x = current_platoon.get_xy(
-                )[0] + int(normal(params["noise.center"], params["noise.scale"]))
-                new_y = current_platoon.get_xy(
-                )[1] + int(normal(params["noise.center"], params["noise.scale"]))
+                new_x = current_platoon.get_xy()[0] + int(
+                    normal(params["noise.center"], params["noise.scale"])
+                )
+                new_y = current_platoon.get_xy()[1] + int(
+                    normal(params["noise.center"], params["noise.scale"])
+                )
 
                 points = space.DiscretePoint(new_x, new_y)
 
                 # Create Squad, add to context, and move it to the point
-                squad = Squad(temp_count, platoon_id, rank, points, isInfected=False)
+                squad = Squad(
+                    temp_count, platoon_id, rank, points, isInfected=False
+                )
                 self.context.add(squad)
                 self.grid.move(squad, points)
                 temp_count += 1
