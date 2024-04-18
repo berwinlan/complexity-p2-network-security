@@ -8,8 +8,10 @@ from numpy.random import normal
 from squad import Squad
 from platoon import Platoon
 from loggers import MeetLog
+from repast4py.space import DiscretePoint as dpt
 
 walker_cache = {}
+
 
 def restore_agent(walker_data: Tuple):
     """
@@ -24,7 +26,7 @@ def restore_agent(walker_data: Tuple):
     if uid in walker_cache:
         walker = walker_cache[uid]
     else:
-        walker = Squad(uid[0], uid[2], pt)
+        walker = Squad(uid[0], uid[1], uid[2], pt, isInfected=False)
         walker_cache[uid] = walker
 
     walker.meet_count = walker_data[1]
@@ -198,8 +200,8 @@ class Model:
                 agent.id,
                 agent.type,  # Platoon number
                 agent.meet_count,
-                coords.x,
-                coords.y,
+                agent.pt.x,
+                agent.pt.y,
                 agent.isInfected,
             )
 
