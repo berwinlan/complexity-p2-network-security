@@ -4,14 +4,13 @@ import numpy as np
 from IPython.display import clear_output
 import pandas as pd
 from repast4py import parameters
-from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.colors import ListedColormap
 
-# Define colors for the colormap
-colors = [(1, 1, 1), (0, 0, 1)]  # White (0) to Blue (1)
+# Define your custom colors
+colors = ['white', 'blue', 'red']
 
-# Create the colormap
-cmap_name = 'white_blue'
-cm = LinearSegmentedColormap.from_list(cmap_name, colors)
+# Create a colormap using ListedColormap
+custom_cmap = ListedColormap(colors)
 
 class Animator:
     """
@@ -41,31 +40,34 @@ class Animator:
                 int(row["tick"]) < 0.2
             ):  # check if it's close to 0, but not bigger than 1
                 self.grid[int(row["x"])][int(row["y"])] = 1
+                if row['infected']:
+                    self.grid[int(row["x"])][int(row["y"])] = 2
                 self.leftoff += 1
 
     def reset_grid(self):
         self.grid = np.zeros((self.rows, self.cols))
 
     def step(self):
-        self.reset_grid()
         self.leftoff += 1
+        if self.leftoff > len(self.df):
+            return
+        self.reset_grid()
         cur_tick = self.df.iloc[self.leftoff]['tick']
         count = 0
         for idx in range(round(cur_tick), round(cur_tick) + self.iters_per_tick):
             count += 1
             row = self.df.iloc[idx]
             self.grid[int(row["x"])][int(row["y"])] = 1
+            if row['infected']:
+                    self.grid[int(row["x"])][int(row["y"])] = 2
             self.leftoff += 1
-
-        if count > 320:
-            print('count > 320, bug')
 
     def draw(self, lim):
         """
         Draw the grid at one tick
         """
         options = dict(
-            cmap=cm,
+            cmap=custom_cmap,
             extent=[0, self.rows, 0, self.cols],
             interpolation="none",
             origin="upper",
@@ -105,6 +107,7 @@ class Animator:
         plt.figure()
         try:
             for i in range(frames - 1):
+                # print(i)
                 self.draw(lim)
                 plt.show()
                 self.step()
