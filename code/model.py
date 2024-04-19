@@ -191,7 +191,6 @@ class Model:
         """
         tick = self.runner.schedule.tick
 
-        # TODO: Again, integrate platoon
         # TODO: Need a way to differentiate different spreads
         for agent in self.context.agents():
             coords = self.grid.get_location(agent)
