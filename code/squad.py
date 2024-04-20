@@ -6,8 +6,6 @@ import numba
 from numba import int32, int64
 from repast4py import core, random
 from repast4py.space import DiscretePoint as dpt
-from numpy.random import normal
-
 
 # Our own files
 from loggers import MeetLog
@@ -61,19 +59,13 @@ class Squad(core.Agent):
         """
         return (self.uid, self.meet_count, self.pt.coordinates, self.isInfected)
 
-    def step(self, grid: space.SharedGrid, xy_dirs) -> None:
+    def step(self, grid: space.SharedGrid) -> None:
         """
         Walks the agent, then checks for infection.
         """
-        center = 0
-        scale = 1
-
-        noise_x = int(normal(center, scale)) + xy_dirs[0]
-        noise_y = int(normal(center, scale)) + xy_dirs[1]
-
         match grid.spread:
             case "random_walk":
-                self._random_walk(grid, [noise_x, noise_y])
+                self._random_walk(grid)
             case "random_waypoint":
                 self._random_waypoint(grid)
             case "hierarchical":
@@ -97,16 +89,25 @@ class Squad(core.Agent):
             meet_log.max_meets = num_here
         self.meet_count += num_here
 
-    def _random_walk(self, grid: space.SharedGrid, xy_dirs) -> None:
+    def _random_walk(self, grid: space.SharedGrid) -> None:
         """
         randomly chooses an offset from its current location (self.pt),
         adds those offsets to its current location to create a new location,
         and then moves to that new location on the grid. The moved-to-location
         becomes the agents new current location.
         """
-        self.pt = grid.move(
-            self, dpt(self.pt.x + xy_dirs[0], self.pt.y + xy_dirs[1], 0)
-        )
+        for _ in range(grid.rndwalk_size):
+            # In a random walk, the agent moves up to 1 in any direction
+            x_walk, y_walk = np.random.choice([-1, 1]), np.random.choice(
+                [-1, 1]
+            )
+
+            self.pt = grid.move(
+                self, dpt(self.pt.x + x_walk, self.pt.y + y_walk, 0)
+            )
+
+            # Checks for infection after each step.
+            self._infect(grid)
 
     def _random_waypoint(self, grid: space.SharedGrid) -> None:
         """
@@ -122,9 +123,16 @@ class Squad(core.Agent):
         x_movement = self.waypoint.x - self.pt.x
         y_movement = self.waypoint.y - self.pt.y
         normalizer = y_movement if y_movement > x_movement else x_movement
-        # Normalize to move at most 1
-        x_movement /= normalizer
-        y_movement /= normalizer
+        while True:
+            try:
+                # Normalize to move at most 1
+                x_movement /= normalizer
+                y_movement /= normalizer
+            # Handle case of zero division
+            except ZeroDivisionError:
+                pass
+            else:
+                break
         # Move
         self.pt = grid.move(
             self,
@@ -150,6 +158,3 @@ class Squad(core.Agent):
         any_infected = any([agent.isInfected for agent in agents_here])
         if any_infected:
             self.isInfected = True
-
-
-

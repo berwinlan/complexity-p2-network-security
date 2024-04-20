@@ -96,6 +96,7 @@ class Model:
 
         # Set spread type
         self.grid.spread = params["spread"]
+        self.grid.rndwalk_size = params["step_size"]
 
         # Create agents
         rank = comm.Get_rank()  # Here, rank is a process rank
@@ -171,7 +172,7 @@ class Model:
             platoon.move()
 
         for agent in self.context.agents():
-            agent.step(self.grid, self.platoons[agent.type].get_xy())
+            agent.step(self.grid)
 
         # TODO: Synchronize sim across processes (5.2.5)
         self.context.synchronize(restore_agent)
@@ -193,7 +194,6 @@ class Model:
 
         # TODO: Need a way to differentiate different spreads
         for agent in self.context.agents():
-            coords = self.grid.get_location(agent)
             self.agent_logger.log_row(
                 tick,
                 agent.id,
