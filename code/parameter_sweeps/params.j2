@@ -1,0 +1,12 @@
+world.height: 886 # m
+world.width: 886  # m
+stop.at: 3600   # ticks, representing 12 hours
+platoon.count: {{platoon}}
+squad.count: {{squad}}
+meet_log_file: './parameter_sweeps/{{spread}}/meet_log_{{spread}}_{{round}}.csv'
+agent_log_file: './parameter_sweeps/{{spread}}/agent_log_{{spread}}_{{round}}.csv'
+InfectionRegion.height: 300
+InfectionRegion.width: 300
+noise.center: 0
+noise.scale: 2
+spread: {{spread}} # 'random_walk' | 'random_waypoint' | 'hierarchical'
