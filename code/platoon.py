@@ -1,15 +1,10 @@
-from typing import Dict, Tuple
-from mpi4py import MPI
-import numpy as np
-from dataclasses import dataclass
-from repast4py import core, random, space, schedule, logging, parameters
-from repast4py import context as ctx
-import repast4py
-from repast4py.space import DiscretePoint as dpt
+"""
+Class for Platoons, which are a grouping of Squads
+"""
 
+from repast4py import random
 
-# Our own files
-from squad import *
+from squad import Squad
 
 
 class Platoon:
@@ -19,7 +14,7 @@ class Platoon:
         self.y = pt.y
         self.direction = [pt.x, pt.y]
 
-    def getPlatoonNum(self):
+    def get_platoon_num(self):
         return self.platoon_num
 
     def move(self):

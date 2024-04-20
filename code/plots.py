@@ -1,4 +1,7 @@
-# Functions to plot the output files created by the models.
+"""
+Functions to plot the CSV output files created by the models.
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -13,7 +16,6 @@ def num_infected(random_walk_path: str, random_waypoint_path: str):
     df = pd.read_csv(random_walk_path)
 
     # Sum `infected` Trues on each tick
-    # TODO: Filter based on type of spread
     grouped = df.groupby("tick").sum().reset_index()
     plt.plot(
         grouped["tick"], grouped["infected"], "--", color="orange", linewidth=3
@@ -23,12 +25,12 @@ def num_infected(random_walk_path: str, random_waypoint_path: str):
     df = pd.read_csv(random_waypoint_path)
 
     # Sum `infected` Trues on each tick
-    # TODO: Filter based on type of spread
     grouped = df.groupby("tick").sum().reset_index()
     plt.plot(
         grouped["tick"], grouped["infected"], ":", color="gray", linewidth=3
     )
 
+    # Style plots
     plt.title("Spread of Malware over Time")
     plt.xlabel("Ticks")
     plt.ylabel("# of infected squads")
@@ -37,6 +39,6 @@ def num_infected(random_walk_path: str, random_waypoint_path: str):
 
 
 if __name__ == "__main__":
-    rwalk = "out/agent_log_20.csv"
-    rway = "out/agent_log_19.csv"
-    num_infected(rwalk, rway)
+    random_walk = "out/agent_log_12.csv"
+    random_waypoint = "out/agent_log_13.csv"
+    num_infected(random_walk, random_waypoint)

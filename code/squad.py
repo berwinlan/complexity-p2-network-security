@@ -1,10 +1,11 @@
-from repast4py import core, random, space
+"""
+Squad class, which is the smallest unit of movement.
+"""
+
 import numpy as np
-from typing import Dict, Tuple
-from dataclasses import dataclass
 import numba
 from numba import int32, int64
-from repast4py import core, random
+from repast4py import core, random, space
 from repast4py.space import DiscretePoint as dpt
 
 # Our own files
@@ -27,16 +28,18 @@ spec = [
 
 
 class Squad(core.Agent):
-    OFFSETS = np.array([-1, 1])
-
     """
-    OFFSETS: numpy array used in the agent behavior implementation to select the direction to move in. 
+    OFFSETS: numpy array used in the agent behavior implementation
+    to select the direction to move in.
+
     See the discussion of the walk method below.
 
     local_id: that uniquely identifies an agent
-    rank: on which the agent is created. 
+    rank: on which the agent is created.
     pt: current location (x, y)
     """
+
+    OFFSETS = np.array([-1, 1])
 
     def __init__(
         self,
@@ -44,20 +47,25 @@ class Squad(core.Agent):
         platoon_num: int,
         rank: int,
         pt: dpt,
-        isInfected: bool = False,
+        is_infected: bool = False,
     ):
         super().__init__(id=local_id, type=platoon_num, rank=rank)
         self.pt = pt
         self.meet_count = 0  # how many ppl they have met
-        self.isInfected = isInfected  # whether they're infected or not
+        self.is_infected = is_infected  # whether they're infected or not
         self.waypoint = dpt(0, 0)  # Goal waypoint coordinates
 
-    def save(self) -> Tuple:
+    def save(self) -> tuple:
         """Saves the state of this Walker as a Tuple.
         Returns:
             The saved state of this Walker.
         """
-        return (self.uid, self.meet_count, self.pt.coordinates, self.isInfected)
+        return (
+            self.uid,
+            self.meet_count,
+            self.pt.coordinates,
+            self.is_infected,
+        )
 
     def step(self, grid: space.SharedGrid) -> None:
         """
@@ -71,15 +79,15 @@ class Squad(core.Agent):
             case "hierarchical":
                 self._hierarchical(grid)
             case _:
-                raise Exception(f"{grid.spread} is an invalid type of spread.")
+                raise NameError(f"{grid.spread} is an invalid type of spread.")
 
         # Infect agents
         self._infect(grid)
 
     def count_colocations(self, grid, meet_log: MeetLog) -> None:
         """
-        gets the number of other agents at the current location,
-        and updates both the agents individual running total of other agents met
+        Gets the number of other agents at the current location, and
+        updates both the agents individual running total of other agents met
         """
         num_here = grid.get_num_agents(self.pt) - 1
         meet_log.total_meets += num_here
@@ -111,7 +119,7 @@ class Squad(core.Agent):
 
     def _random_waypoint(self, grid: space.SharedGrid) -> None:
         """
-        Selects a random point and moves in that direction until it has reached it.
+        Selects a random point and moves in that direction until it arrives.
         """
         # If this squad has reached its waypoint or needs a new one, set new waypoint
         if (self in grid.get_agents(self.waypoint)) or (
@@ -141,6 +149,13 @@ class Squad(core.Agent):
 
     def _hierarchical(self, grid: space.SharedGrid):
         pass
+        # Begin at Company's outpost
+
+        # HOLD between 10 and 60 minutes
+
+        # With platoon, GOTO a random waypoint all together
+
+        # Random walk for 30 min to 4 hours independently, then GOTO outpost
 
     def _infect(self, grid: space.SharedGrid) -> None:
         """
@@ -150,11 +165,11 @@ class Squad(core.Agent):
         coords = grid.get_location(self)
         if grid.infected_width[0] < coords.x < grid.infected_width[1]:
             if grid.infected_height[0] < coords.y < grid.infected_height[1]:
-                self.isInfected = True
+                self.is_infected = True
 
         # Get all the agents at this location
         agents_here = grid.get_agents(self.pt)
         # If any of them are infected, this agent is infected
-        any_infected = any([agent.isInfected for agent in agents_here])
+        any_infected = any(agent.is_infected for agent in agents_here)
         if any_infected:
-            self.isInfected = True
+            self.is_infected = True

@@ -1,19 +1,24 @@
-from mpi4py import MPI
+"""
+Model class for the repast4py simulation.
+"""
+
 import random
-from typing import Dict, Tuple
+from mpi4py import MPI
+from numpy.random import normal
+
+import repast4py
 from repast4py import space, schedule, logging
 from repast4py import context as ctx
-import repast4py
-from numpy.random import normal
+from repast4py.space import DiscretePoint as dpt
+
 from squad import Squad
 from platoon import Platoon
 from loggers import MeetLog
-from repast4py.space import DiscretePoint as dpt
 
 walker_cache = {}
 
 
-def restore_agent(walker_data: Tuple):
+def restore_agent(walker_data: tuple):
     """
     Args:
         walker_data: tuple containing the data returned by Walker.save.
@@ -26,7 +31,7 @@ def restore_agent(walker_data: Tuple):
     if uid in walker_cache:
         walker = walker_cache[uid]
     else:
-        walker = Squad(uid[0], uid[1], uid[2], pt, isInfected=False)
+        walker = Squad(uid[0], uid[1], uid[2], pt, is_infected=False)
         walker_cache[uid] = walker
 
     walker.meet_count = walker_data[1]
@@ -124,7 +129,7 @@ class Model:
 
                 # Create Squad, add to context, and move it to the point
                 squad = Squad(
-                    temp_count, platoon_id, rank, points, isInfected=False
+                    temp_count, platoon_id, rank, points, is_infected=False
                 )
                 self.context.add(squad)
                 self.grid.move(squad, points)
@@ -167,6 +172,9 @@ class Model:
         self.log_agents()
 
     def step(self):
+        """
+        Steps the model.
+        """
         # Calls each agent's step function
         for platoon in self.platoons:
             platoon.move()
@@ -174,7 +182,8 @@ class Model:
         for agent in self.context.agents():
             agent.step(self.grid)
 
-        # TODO: Synchronize sim across processes (5.2.5)
+        # Synchronize across processes. (Not used because
+        # we run on only one thread.)
         self.context.synchronize(restore_agent)
 
         # Get data for logging
@@ -192,7 +201,6 @@ class Model:
         """
         tick = self.runner.schedule.tick
 
-        # TODO: Need a way to differentiate different spreads
         for agent in self.context.agents():
             self.agent_logger.log_row(
                 tick,
@@ -201,7 +209,7 @@ class Model:
                 agent.meet_count,
                 agent.pt.x,
                 agent.pt.y,
-                agent.isInfected,
+                agent.is_infected,
             )
 
         # Write to file
@@ -215,12 +223,15 @@ class Model:
         self.agent_logger.close()
 
     def start(self):
+        """
+        Starts runner.
+        """
         self.runner.execute()
 
     def _reset_log_counters(self):
         """
-        Reset log counters. Often used after logging each tick to avoid counting totals,
-        instead of counting per tick.
+        Reset log counters. Often used after logging each tick to avoid
+        counting totals, instead of counting per tick.
         """
         self.meet_log.max_meets = self.meet_log.min_meets = (
             self.meet_log.total_meets
