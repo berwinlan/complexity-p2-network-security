@@ -131,7 +131,7 @@ class Model:
 
                 # Create Squad, add to context, and move it to the point
                 squad = Squad(
-                    temp_count, platoon_id, rank, points, is_infected=False
+                    temp_count, current_platoon, platoon_id, rank, points, is_infected=False
                 )
                 self.context.add(squad)
                 self.grid.move(squad, points)

@@ -45,17 +45,21 @@ class Squad(core.Agent):
     def __init__(
         self,
         local_id: int,
+        platoon,        # Platoon
         platoon_num: int,
         rank: int,
         pt: dpt,
         is_infected: bool = False,
     ):
         super().__init__(id=local_id, type=Squad.TYPE, rank=rank)
+        self.platoon = platoon
         self.platoon_num = platoon_num
         self.pt = pt
         self.meet_count = 0  # how many ppl they have met
         self.is_infected = is_infected  # whether they're infected or not
         self.waypoint = dpt(0, 0)  # Goal waypoint coordinates
+        self.time = 0       # Count ticks for hierarchial hold
+        self.hierarchical = None    # Tracker for hierarchical movement
 
     def save(self) -> tuple:
         """Saves the state of this Walker as a Tuple.
@@ -119,21 +123,26 @@ class Squad(core.Agent):
             # Checks for infection after each step.
             self._infect(grid)
 
-    def _random_waypoint(self, grid: space.SharedGrid) -> None:
+    def _random_waypoint(self, grid: space.SharedGrid, waypoint=None) -> None:
         """
         Selects a random point and moves in that direction until it arrives.
         """
-        # If this squad has reached its waypoint or needs a new one, set new waypoint
-        if (self in grid.get_agents(self.waypoint)) or (
-            self.waypoint.x == 0 and self.waypoint.y == 0
-        ):
-            self.waypoint = grid.get_random_local_pt(random.default_rng)
+        if not waypoint:
+            # If this squad has reached its waypoint or needs a new one, set new waypoint
+            if (self in grid.get_agents(self.waypoint)) or (
+                self.waypoint.x == 0 and self.waypoint.y == 0
+            ):
+                self.waypoint = grid.get_random_local_pt(random.default_rng)
+            
+            # A little bit of shenanigans to get everything else to work
+            waypoint = self.waypoint
 
         # Continue walking towards waypoint, using the shortest path
-        x_movement = self.waypoint.x - self.pt.x
-        y_movement = self.waypoint.y - self.pt.y
+        x_movement = waypoint.x - self.pt.x
+        y_movement = waypoint.y - self.pt.y
         normalizer = y_movement if y_movement > x_movement else x_movement
         while True:
+            coords = grid.get_location(self)
             try:
                 # Normalize to move at most 1
                 x_movement /= normalizer
@@ -141,8 +150,12 @@ class Squad(core.Agent):
             # Handle case of zero division
             except ZeroDivisionError:
                 pass
+            # Break if the agent reached the destination
             else:
-                break
+                print("breaking")
+                if (coords.x == waypoint.x) and (coords.y == waypoint.y):
+                    break
+        
         # Move
         self.pt = grid.move(
             self,
@@ -150,14 +163,32 @@ class Squad(core.Agent):
         )
 
     def _hierarchical(self, grid: space.SharedGrid):
-        pass
-        # Begin at Company's outpost
-
-        # HOLD between 10 and 60 minutes
-
-        # With platoon, GOTO a random waypoint all together
-
-        # Random walk for 30 min to 4 hours independently, then GOTO outpost
+        match self.hierarchical:
+            case None:
+                # Begin at Platoon's outpost
+                # Move Squads to the Platoon's outpost as initial position
+                grid.move(self, self.platoon.outpost)
+                self.hierarchical = "HOLD"
+            case "HOLD":
+                # HOLD between 10 and 60 minutes (i.e. don't move)
+                self.time += 1
+                if (self.time > 60) or (self.time > 10) and (bool(np.random.random() <= 0.5)):
+                    self.hierarchical = "WAYPOINT"
+                    self.time = 0
+            case "WAYPOINT":
+                # With platoon, GOTO a random waypoint all together
+                self._random_waypoint(grid, self.platoon.waypoint)
+                self.hierarchical = "RNDWALK"
+            case "RNDWALK":
+                self.time += 1
+                # Random walk for 30 min to 4 hours independently, then GOTO outpost
+                if (self.time > 60 * 4) or (self.time > 30) and (bool(np.random.random() <= 0.5)):
+                    self.hierarchical = "OUTPOST"
+                    self.time = 0
+                self._random_walk(grid)
+            case "OUTPOST":
+                self._random_waypoint(grid, self.platoon.outpost)
+                self.hierarchical = "HOLD"
 
     def _infect(self, grid: space.SharedGrid) -> None:
         """

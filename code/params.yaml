@@ -3,7 +3,7 @@ world.width: 886  # m
 InfectionRegion.height: 300
 InfectionRegion.width: 300
 
-stop.at: 50000    # ticks
+stop.at: 10000    # ticks
 
 # Parameters for spawning agents
 platoon.count: 3
