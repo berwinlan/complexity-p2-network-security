@@ -45,7 +45,7 @@ class Squad(core.Agent):
     def __init__(
         self,
         local_id: int,
-        platoon,        # Platoon
+        platoon,  # Platoon
         platoon_num: int,
         rank: int,
         pt: dpt,
@@ -58,8 +58,8 @@ class Squad(core.Agent):
         self.meet_count = 0  # how many ppl they have met
         self.is_infected = is_infected  # whether they're infected or not
         self.waypoint = dpt(0, 0)  # Goal waypoint coordinates
-        self.time = 0       # Count ticks for hierarchial hold
-        self.hierarchical = None    # Tracker for hierarchical movement
+        self.time = 0  # Count ticks for hierarchial hold
+        self.hierarchical = None  # Tracker for hierarchical movement
 
     def save(self) -> tuple:
         """Saves the state of this Walker as a Tuple.
@@ -133,7 +133,7 @@ class Squad(core.Agent):
                 self.waypoint.x == 0 and self.waypoint.y == 0
             ):
                 self.waypoint = grid.get_random_local_pt(random.default_rng)
-            
+
             # A little bit of shenanigans to get everything else to work
             waypoint = self.waypoint
 
@@ -141,21 +141,17 @@ class Squad(core.Agent):
         x_movement = waypoint.x - self.pt.x
         y_movement = waypoint.y - self.pt.y
         normalizer = y_movement if y_movement > x_movement else x_movement
-        while True:
-            coords = grid.get_location(self)
+        dividing = True
+        while dividing:
             try:
                 # Normalize to move at most 1
                 x_movement /= normalizer
                 y_movement /= normalizer
+                dividing = False
             # Handle case of zero division
             except ZeroDivisionError:
                 pass
-            # Break if the agent reached the destination
-            else:
-                print("breaking")
-                if (coords.x == waypoint.x) and (coords.y == waypoint.y):
-                    break
-        
+
         # Move
         self.pt = grid.move(
             self,
@@ -172,23 +168,34 @@ class Squad(core.Agent):
             case "HOLD":
                 # HOLD between 10 and 60 minutes (i.e. don't move)
                 self.time += 1
-                if (self.time > 60) or (self.time > 10) and (bool(np.random.random() <= 0.5)):
+                if (
+                    (self.time > 60)
+                    or (self.time > 10)
+                    and (bool(np.random.random() <= 0.5))
+                ):
                     self.hierarchical = "WAYPOINT"
                     self.time = 0
             case "WAYPOINT":
                 # With platoon, GOTO a random waypoint all together
                 self._random_waypoint(grid, self.platoon.waypoint)
-                self.hierarchical = "RNDWALK"
+                if self._arrived(grid, self.platoon.waypoint):
+                    self.hierarchical = "RNDWALK"
             case "RNDWALK":
                 self.time += 1
                 # Random walk for 30 min to 4 hours independently, then GOTO outpost
-                if (self.time > 60 * 4) or (self.time > 30) and (bool(np.random.random() <= 0.5)):
+                if (
+                    (self.time > 60 * 4)
+                    or (self.time > 30)
+                    and (bool(np.random.random() <= 0.5))
+                ):
                     self.hierarchical = "OUTPOST"
                     self.time = 0
                 self._random_walk(grid)
             case "OUTPOST":
                 self._random_waypoint(grid, self.platoon.outpost)
-                self.hierarchical = "HOLD"
+                if self._arrived(grid, self.platoon.outpost):
+                    self.hierarchical = "HOLD"
+        self._infect(grid)
 
     def _infect(self, grid: space.SharedGrid) -> None:
         """
@@ -206,3 +213,9 @@ class Squad(core.Agent):
         any_infected = any(agent.is_infected for agent in agents_here)
         if any_infected:
             self.is_infected = True
+
+    def _arrived(self, grid: space.SharedGrid, dpt: dpt):
+        """
+        Checks whether the agent is at a location.
+        """
+        return self in grid.get_agents(dpt)
