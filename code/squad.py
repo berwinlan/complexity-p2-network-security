@@ -16,6 +16,11 @@ from loggers import MeetLog
 def is_equal(a1, a2):
     return a1[0] == a2[0] and a1[1] == a2[1]
 
+def random_prob():
+    return np.random.random()
+
+def flip(p):
+    return np.random.random() < p
 
 spec = [
     ("mo", int32[:]),
@@ -48,7 +53,7 @@ class Squad(core.Agent):
         platoon_num: int,
         rank: int,
         pt: dpt,
-        is_infected: bool = False,
+        is_infected: bool = False
     ):
         super().__init__(id=local_id, type=Squad.TYPE, rank=rank)
         self.platoon_num = platoon_num
@@ -56,6 +61,7 @@ class Squad(core.Agent):
         self.meet_count = 0  # how many ppl they have met
         self.is_infected = is_infected  # whether they're infected or not
         self.waypoint = dpt(0, 0)  # Goal waypoint coordinates
+        self.prob_infected = random_prob()
 
     def save(self) -> tuple:
         """Saves the state of this Walker as a Tuple.
@@ -167,11 +173,13 @@ class Squad(core.Agent):
         coords = grid.get_location(self)
         if grid.infected_width[0] < coords.x < grid.infected_width[1]:
             if grid.infected_height[0] < coords.y < grid.infected_height[1]:
-                self.is_infected = True
+                if flip(self.prob_infected):
+                    self.is_infected = True
 
         # Get all the agents at this location
         agents_here = grid.get_agents(self.pt)
         # If any of them are infected, this agent is infected
         any_infected = any(agent.is_infected for agent in agents_here)
         if any_infected:
-            self.is_infected = True
+            if flip(self.prob_infected):
+                self.is_infected = True
