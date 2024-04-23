@@ -113,7 +113,9 @@ class Model:
         temp_count = 0
         for platoon_id in range(params["platoon.count"]):
             pt = self.grid.get_random_local_pt(rng)
-            current_platoon = Platoon(platoon_id, pt)
+            current_platoon = Platoon(
+                platoon_id, platoon_id, platoon_id, pt, self.grid
+            )
             self.platoons.append(current_platoon)
 
             for _ in range(params["squad.count"]):
@@ -205,7 +207,8 @@ class Model:
             self.agent_logger.log_row(
                 tick,
                 agent.id,
-                agent.type,  # Platoon number
+                agent.type,  # 0 for Squad, 1 for Platoon
+                agent.platoon_num,
                 agent.meet_count,
                 agent.pt.x,
                 agent.pt.y,

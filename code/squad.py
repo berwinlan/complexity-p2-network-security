@@ -39,6 +39,7 @@ class Squad(core.Agent):
     pt: current location (x, y)
     """
 
+    TYPE = 0
     OFFSETS = np.array([-1, 1])
 
     def __init__(
@@ -49,7 +50,8 @@ class Squad(core.Agent):
         pt: dpt,
         is_infected: bool = False,
     ):
-        super().__init__(id=local_id, type=platoon_num, rank=rank)
+        super().__init__(id=local_id, type=Squad.TYPE, rank=rank)
+        self.platoon_num = platoon_num
         self.pt = pt
         self.meet_count = 0  # how many ppl they have met
         self.is_infected = is_infected  # whether they're infected or not
