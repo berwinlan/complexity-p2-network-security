@@ -26,6 +26,8 @@ class Platoon(core.Agent):
         self.direction = [pt.x, pt.y]
         # Set a random point as the outpost
         self.outpost = grid.get_random_local_pt(random.default_rng)
+        # Initialize waypoint
+        self.waypoint = DiscretePoint(0, 0)
 
     def get_platoon_num(self):
         return self.platoon_num
