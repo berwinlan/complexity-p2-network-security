@@ -43,6 +43,7 @@ def num_infected(
 
     # Style plots
     plt.title("Spread of Malware over Time")
+    plt.xlim([-1000, 35000])
     plt.xlabel("Ticks")
     plt.ylabel("# of infected squads")
     if hierarchical_path:
@@ -55,5 +56,5 @@ def num_infected(
 if __name__ == "__main__":
     random_walk = "out/agent_log_15.csv"
     random_waypoint = "out/agent_log_16.csv"
-    hierarchical = "out/agent_log_17.csv"
+    hierarchical = "out/agent_log_18.csv"
     num_infected(random_walk, random_waypoint, hierarchical)
