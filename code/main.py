@@ -23,3 +23,4 @@ if __name__ == "__main__":
     run(params)
 
 # Usage: mpirun -n 1 python main.py params.yaml
+# Change params.yaml to use the intended movement type
