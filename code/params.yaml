@@ -15,5 +15,5 @@ meet_log_file: './out/meet_log.csv'
 agent_log_file: './out/agent_log.csv'
 
 # Parameters for movement types
-spread: 'hierarchical' # 'random_walk' | 'random_waypoint' | 'hierarchical'
+spread: 'random_waypoint' # 'random_walk' | 'random_waypoint' | 'hierarchical'
 step_size: 1

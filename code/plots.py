@@ -49,7 +49,6 @@ def num_infected(
 
 
 if __name__ == "__main__":
-
     random_walk = "out/agent_log_18.csv"
     random_waypoint = "out/agent_log_17.csv"
     hierarchial = "out/agent_log_19.csv"

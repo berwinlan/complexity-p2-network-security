@@ -141,16 +141,11 @@ class Squad(core.Agent):
         x_movement = waypoint.x - self.pt.x
         y_movement = waypoint.y - self.pt.y
         normalizer = y_movement if y_movement > x_movement else x_movement
-        dividing = True
-        while dividing:
-            try:
-                # Normalize to move at most 1
-                x_movement /= normalizer
-                y_movement /= normalizer
-                dividing = False
-            # Handle case of zero division
-            except ZeroDivisionError:
-                pass
+        # Prevent ZeroDivisionErrors
+        normalizer = 1 if normalizer == 0 else normalizer
+        # Normalize to move at most 1
+        x_movement /= normalizer
+        y_movement /= normalizer
 
         # Move
         self.pt = grid.move(
@@ -159,6 +154,7 @@ class Squad(core.Agent):
         )
 
     def _hierarchical(self, grid: space.SharedGrid):
+        scale = 1000
         match self.hierarchical:
             case None:
                 # Begin at Platoon's outpost
@@ -169,8 +165,8 @@ class Squad(core.Agent):
                 # HOLD between 10 and 60 minutes (i.e. don't move)
                 self.time += 1
                 if (
-                    (self.time > 60)
-                    or (self.time > 10)
+                    (self.time > 60 * scale)
+                    or (self.time > 10 * scale)
                     and (bool(np.random.random() <= 0.5))
                 ):
                     self.hierarchical = "WAYPOINT"
@@ -184,8 +180,8 @@ class Squad(core.Agent):
                 self.time += 1
                 # Random walk for 30 min to 4 hours independently, then GOTO outpost
                 if (
-                    (self.time > 60 * 4)
-                    or (self.time > 30)
+                    (self.time > 60 * 4 * scale)
+                    or (self.time > 30 * scale)
                     and (bool(np.random.random() <= 0.5))
                 ):
                     self.hierarchical = "OUTPOST"
