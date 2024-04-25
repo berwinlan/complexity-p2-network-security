@@ -6,7 +6,7 @@ InfectionRegion.width: 300
 stop.at: 50000    # ticks
 
 # Parameters for spawning agents
-platoon.count: 3
+platoon.count: 16
 squad.count: 5
 noise.center: 0
 noise.scale: 2
