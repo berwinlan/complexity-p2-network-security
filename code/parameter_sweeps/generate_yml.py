@@ -6,7 +6,7 @@ import sys
 
 
 # Global Vars
-current_dir = "parameter_sweeps"
+current_dir = "parameter_sweeps" 
 ymlfile = "params.j2"
 
 
@@ -27,6 +27,13 @@ def params_maker(platoon, squad, spread, round):
 
 
 def make_yml(platoon, squad, spread, round):
+    """
+    Automatically creates a yaml file and writes it to the specified location
+
+    Args:
+        platoon: number of platoons
+        squad: number of 
+    """
 
     if os.path.isfile(os.path.join(current_dir, ymlfile)):
         yml_content = params_maker(platoon, squad, spread, round)

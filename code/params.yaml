@@ -1,5 +1,5 @@
-world.height: 886 # m
-world.width: 886  # m
+world.height: 500 # m
+world.width: 500  # m
 InfectionRegion.height: 300
 InfectionRegion.width: 300
 
