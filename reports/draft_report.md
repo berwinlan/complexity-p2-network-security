@@ -23,7 +23,9 @@ The three types of movement the paper investigates are the following:
 * Random waypoint: Squads randomly spawn, choose a random point, and walk toward that random point until the squad has arrived. Squads are also independent here.
 * Hierarchical: Squads begin at their Company’s outpost, which is a randomly selected but constant point. They stay there for a little bit, then go to a random waypoint as a Company. Then, the Squads random walk independently, then the cycle repeats.
 
-We are replicating the experiment that compares the rate of malware spread across three different movement patterns.
+TODO: Talk a bit more about the model itself, and how we're getting from walk types to metrics. How does spread actually happen? Maybe figures of what paths look like.
+
+We replicated the experiment that compares the rate of malware spread across three different movement patterns.
 
 ![](img/malware_spread.jpeg)
 
@@ -32,6 +34,8 @@ We are replicating the experiment that compares the rate of malware spread acros
 ### Replication Results
 
 In our replication, we tested out the random walk and random waypoint movements. We successfully replicated the general shapes of each curve, and we see that like the original experiment, the malware spreads extremely quickly with the random waypoint and much slower with the random walk. Our results of the replication are below:
+
+TODO: Map ticks to hours, run the other one with 80 squads
 
 ![](img/replication.png)
 
@@ -42,6 +46,8 @@ Based on our results, we found that the random waypoint movement causes malware 
 ### Extension Results
 
 For our extension we plan to do a parameter sweep on different values for platoons and squads for different types of movement. Currently we have the infrastructure built for a parameter sweep, and we just need to log all the data and visualize it. The paper never delved into the impacts of different sizes for platoons and squads on malware spread, meaning that this extension will give us a clear idea how size impacts mobile network infection rate. 
+
+TODO: Try embedding animation
 
 ### Discussion
 
