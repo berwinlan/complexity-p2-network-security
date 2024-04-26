@@ -49,8 +49,11 @@ One continuing cause for concern is adapting the paper from Repast Simphony to r
 
 ### Conclusion
 
-
-
+### TODO
+* Scale up squads for final figures
+* Ensure tense matching
+* Make ticks -> hours
+* Fix methodology wording
 
 ### Annotated Bibliography
 
