@@ -102,7 +102,7 @@ class Animator:
 
     #     return result
 
-    def animate(self, frames: int, lim=[0, 886, 0, 886]):
+    def animate(self, frames: int, lim=[0, 500, 0, 500]):
         """
         Animate the ACO optimization for the given number of frames
 
