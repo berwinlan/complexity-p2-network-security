@@ -18,7 +18,7 @@ This paper investigates how malware infiltrates mobile tactical networks given d
 
 ### Methodology
 
-The three types of movement the paper investigated are the following:
+The three types of movement the paper investigates are the following:
 * Random walk: Squads randomly spawn and random walk independently.
 * Random waypoint: Squads randomly spawn, choose a random point, and walk toward that random point until the squad has arrived. Squads are also independent here.
 * Hierarchical: Squads begin at their Company’s outpost, which is a randomly selected but constant point. They stay there for a little bit, then go to a random waypoint as a Company. Then, the Squads random walk independently, then the cycle repeats.
@@ -47,7 +47,6 @@ For our extension we plan to do a parameter sweep on different values for platoo
 
 One continuing cause for concern is adapting the paper from Repast Simphony to repast4py, the Python library. As a result, we’ve done a lot of tuning, such as the times agents move on each step and the size of the infection area.
 
-
 ### Conclusion
 
 
@@ -56,5 +55,5 @@ One continuing cause for concern is adapting the paper from Repast Simphony to r
 ### Annotated Bibliography
 
 [1] [An agent-based modeling framework for cybersecurity in mobile tactical networks](https://journals.sagepub.com/doi/10.1177/1548512917738858) **Brian Thompson, James Morris-King** 
-This paper investigates how malware infiltrates mobile tactical networks given different movement patterns and types of security forifications against mobile networks through agent based modelling. The paper highlights how even if different mobile networks may be isolated from others, lack of effective security policies coupled with different types of movement interactions can heavily impact malware spread behavior in the overall system.  
+This paper investigates how malware infiltrates mobile tactical networks given different movement patterns and types of security forifications against mobile networks through agent based modeling. The paper highlights how even if different mobile networks may be isolated from others, lack of effective security policies coupled with different types of movement interactions can heavily impact malware spread behavior in the overall system.  
  
