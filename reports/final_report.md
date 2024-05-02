@@ -14,15 +14,23 @@ This paper investigates how malware infiltrates mobile tactical networks given d
 
 ### Methodology
 
+First off, to simulate the behavior of mobile tactical networks, as part of the paper's design, each agent represents a squad, and squads are group together to form platoons, which makes agents cluster together when moving around. All agents active on the field are part of a company. 
+
+![](img/paper_grouping.jpeg)
+
+
+
 The three types of movement the paper investigated are the following:
 
 - Random walk: Squads randomly spawn and each squad takes a step in a random direction.
 - Random waypoint: Squads randomly spawn, choose a random point, and perform a walk toward that point until the squad has arrived. Squads are also independent here.
 - Hierarchical: Squads begin at their company’s outpost, which is a randomly selected but constant point. They stay there for a little bit, then go to a random waypoint as a company. Then, the Squads random walk independently, then the cycle repeats.
 
-We are replicating the experiment that compares the rate of malware spread across three different movement patterns.
+ We are replicating the experiment that compares the rate of malware spread across three different movement patterns. It is important to note that for each walk while squads randomly move in any direction, it is written so that squads generally are clustered by platoon.
+
 
 ![Random Walk Gif](img/walk.gif)
+
 **Figure 1:** Animation of random walk over time, focusing on a small window. Blue agents represent uninfected devices and red represent infected.
 
 <!-- ![](img/malware_spread.jpeg) -->
@@ -31,8 +39,13 @@ We are replicating the experiment that compares the rate of malware spread acros
 
 In our replication, we tested out the random walk and random waypoint movements. We successfully replicated the general shapes of each curve, and we see that like the original experiment, the malware spreads extremely quickly with the random waypoint and much slower with the random walk. Our results of the replication are below:
 
+
+![](img/paper_spread.png)
+
+**Figure 2a:** Spread of malware over time results from the paper by Brian Thompson and James Morris-King. Each hour corresponds to 1000 ticks. 
+
 ![](img/replication.png)
-**Figure 2:** Spread of malware over time, where each 1000 ticks corresponds to one hour. Similar to the paper, each travel method eventually hits the carrying capacity of 15 squads, which is the number of squads initialized.
+**Figure 2b:** Spread of malware over time, where each 1000 ticks corresponds to one hour. Similar to the paper, each travel method eventually hits the carrying capacity of 15 squads, which is the number of squads initialized.
 
 Based on our results, we found that the random waypoint movement causes malware to spread more rapidly than the random walk movement. Although agents’ maximum step size is the same in all of the movement patterns, the agents end up interacting more with each other when they are moving to random waypoints.
 
