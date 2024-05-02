@@ -97,7 +97,6 @@ It's also unfortunate that our implementation for all random waypoint and hierar
 ### Conclusion
 Based on our modeling results, we can conclude that movement patterns that cause agents to travel further across the space lead to higher rates of infection. Especially with lower agent density after random spawning, a random-walk-like strategy can cause them to stay in their own area and not interact with other agents. This impacts any organization that has a large number of agents traversing an area, and they can use this model to make informed decisions about how to avoid malware attacks.
 
-Overall, we successfully replicated 
 
 When looking at the at results from out initial replication, it is clear that there is a lot of tweaking and tuning that is required for us if we wanted to exactly replicate the results of the paper. The paper did not give any specific dimensions or parameter values, so we had to guess the size of the map as well as the number of platoons. This probably affected the results as we had an insanely large map initially (886x886) which led to infection rates being much slower than anticipated. After shrinking the map to 500x500 for the parameter sweeps it was clear that the timesteps needed to show full infection was a lot shorter than what we first started with. However, we were able to replicate the general behavior of each movement which tells us that our foundational logic is solid. The parameter sweep also reinforced 
 
