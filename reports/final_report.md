@@ -48,6 +48,7 @@ For our extension we plan to do a parameter sweep on different values for platoo
 One continuing cause for concern is adapting the paper from Repast Simphony to repast4py, the Python library. As a result, we’ve done a lot of tuning, such as the times agents move on each step and the size of the infection area. However, the switch to Python means that we haven't been able to perfectly replicate the experiments; for example, the shapes of the infection curves are fairly accurate, but the time steps aren't perfectly replicated (our model takes much longer to produce the same behavior).
 
 ### Conclusion
+Based on our modeling results, we can conclude that movement patterns that cause agents to travel further across the space lead to higher rates of infection. Especially with lower agent density after random spawning, a random-walk-like strategy can cause them to stay in their own area and not interact with other agents. This impacts any organization that has a large number of agents traversing an area, and they can use this model to make informed decisions about how to avoid malware attacks.
 
 ### Annotated Bibliography
 
