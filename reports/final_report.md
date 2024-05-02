@@ -54,11 +54,10 @@ In our replication, we tested out the random walk and random waypoint movements.
 
 Based on our results, we found that the random waypoint movement causes malware to spread more rapidly than the random walk movement. Although agents’ maximum step size is the same in all of the movement patterns, the agents end up interacting more with each other when they are moving to random waypoints. We also attempted to do hierarchial and the results we got were a lot less accurate to the paper compared to random walk and waypoint, but it was accurate in that it was the second fastest spreading movement type. 
 
-### Extension Results
 
 ### Extension Results
 
-While we were able to sweep fewer platoons than random walk, there is less of a clear trend for random waypoint. As the number of platoons increrases, the rate of infection doesn't necessarily increase with it. We think this is because random waypoint is less heavily influenced by how close agents spawn to one another, unlike random walk.
+While we were able to sweep fewer platoons than random walk, there is less of a clear trend for random waypoint. As the number of platoons increases, the rate of infection doesn't necessarily increase with it. We think this is because random waypoint is less heavily influenced by how close agents spawn to one another, unlike random walk.
 
 The main parameter sweep we did was on random walk, where we increased the size of the squads and platoons to see how that would affect the spread. 
 
@@ -74,12 +73,24 @@ We also did a quick parameter sweep with random waypoint but with increasing num
 
 
 Overall it seems like increasing the number of platoons does not drastically change the behavior of infection, and rather slows or speeds at the rate that malware spreads. 
+
+Finally, one last parameter sweep we did was to see whether defenses or higher resistance of infection would impact the malware spread rate.
+
+At 80 squads and for 1000 timesteps, we ran a parameter sweep with changing defenses/malware defenses. We changed how high the malware immunity was, so that when a agent was in contact with an infected agent, we could control the probability that they would be getting infected. For example, if they were at 90% defenses, it would mean that agents in contact with malware had a 90% chance of not becoming infected. The results are below.
+
+![](img/random_waypoint_defenses_sweep.png)
+
+**Figure 5** Shows how defenses against malware impact speed of malware spread. Any defenses 70% or above shows a notable slow in initial infection across the networks, but any defenses below 70% are indistinguishable with the rest of the parameter sweep. 
+
+Overall, we can see that defenses only are effectively if they have high coverage. However, in general, 10% is the worst in terms of slowly malware spread which means that any coverage is probably better than none. 
+
+
 ### Discussion
 
 One continuing cause for concern is adapting the paper from Repast Simphony to repast4py, the Python library. As a result, we’ve done a lot of tuning, such as the times agents move on each step and the size of the infection area. However, the switch to Python means that we haven't been able to perfectly replicate the experiments; for example, the shapes of the infection curves are fairly accurate, but the time steps aren't perfectly replicated (our model takes much longer to produce the same behavior).
 
 
-The original paper explored how different movement behaviors would impact spread. 
+The original paper explored how different movement behaviors would impact spread, and we have found that certain movement styles impact the speed of malware spread in a system. 
 
 ### Conclusion
 Based on our modeling results, we can conclude that movement patterns that cause agents to travel further across the space lead to higher rates of infection. Especially with lower agent density after random spawning, a random-walk-like strategy can cause them to stay in their own area and not interact with other agents. This impacts any organization that has a large number of agents traversing an area, and they can use this model to make informed decisions about how to avoid malware attacks.
