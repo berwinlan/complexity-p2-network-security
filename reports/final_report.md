@@ -78,7 +78,7 @@ Finally, one last parameter sweep we did was to see whether defenses or higher r
 
 At 80 squads and for 1000 timesteps, we ran a parameter sweep with changing defenses/malware defenses. We changed how high the malware immunity was, so that when a agent was in contact with an infected agent, we could control the probability that they would be getting infected. For example, if they were at 90% defenses, it would mean that agents in contact with malware had a 90% chance of not becoming infected. The results are below.
 
-![](img/random_waypoint_defenses_sweep.png)
+![](img/random_walk_defenses_sweep.png)
 
 **Figure 5** Shows how defenses against malware impact speed of malware spread. Any defenses 70% or above shows a notable slow in initial infection across the networks, but any defenses below 70% are indistinguishable with the rest of the parameter sweep. 
 
@@ -89,8 +89,10 @@ Overall, we can see that defenses only are effectively if they have high coverag
 
 One continuing cause for concern is adapting the paper from Repast Simphony to repast4py, the Python library. As a result, we’ve done a lot of tuning, such as the times agents move on each step and the size of the infection area. However, the switch to Python means that we haven't been able to perfectly replicate the experiments; for example, the shapes of the infection curves are fairly accurate, but the time steps aren't perfectly replicated (our model takes much longer to produce the same behavior).
 
-
 The original paper explored how different movement behaviors would impact spread, and we have found that certain movement styles impact the speed of malware spread in a system. 
+
+It's also unfortunate that our implementation for all random waypoint and hierarchial are not as robust and thus we couldn't do as much parameter sweeping as we wished.
+
 
 ### Conclusion
 Based on our modeling results, we can conclude that movement patterns that cause agents to travel further across the space lead to higher rates of infection. Especially with lower agent density after random spawning, a random-walk-like strategy can cause them to stay in their own area and not interact with other agents. This impacts any organization that has a large number of agents traversing an area, and they can use this model to make informed decisions about how to avoid malware attacks.
