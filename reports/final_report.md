@@ -32,7 +32,7 @@ We are replicating the experiment that compares the rate of malware spread acros
 In our replication, we tested out the random walk and random waypoint movements. We successfully replicated the general shapes of each curve, and we see that like the original experiment, the malware spreads extremely quickly with the random waypoint and much slower with the random walk. Our results of the replication are below:
 
 ![](img/replication.png)
-**Figure 2:** Spread of malware over time, where each 1000 ticks corresponds to one hour. Similar to the paper, each travel method eventually hits the carrying capacity of 15 squads, which is the number of squads initialized.
+**Figure 2:** Spread of malware over time, where each 300 ticks corresponds to one hour. Similar to the paper, each travel method eventually infects every squad.
 
 Based on our results, we found that the random waypoint movement causes malware to spread more rapidly than the random walk movement. Although agents’ maximum step size is the same in all of the movement patterns, the agents end up interacting more with each other when they are moving to random waypoints.
 
@@ -40,9 +40,12 @@ Based on our results, we found that the random waypoint movement causes malware 
 
 For our extension we plan to do a parameter sweep on different values for platoons and squads for different types of movement. Currently we have the infrastructure built for a parameter sweep, and we just need to log all the data and visualize it. The paper never delved into the impacts of different sizes for platoons and squads on malware spread, meaning that this extension will give us a clear idea how size impacts mobile network infection rate.
 
+![](img/random_waypoint_sweep.png)
+**Figure 3:** Parameter sweep of 10, 20, and 30 platoons 
+
 ### Discussion
 
-One continuing cause for concern is adapting the paper from Repast Simphony to repast4py, the Python library. As a result, we’ve done a lot of tuning, such as the times agents move on each step and the size of the infection area.
+One continuing cause for concern is adapting the paper from Repast Simphony to repast4py, the Python library. As a result, we’ve done a lot of tuning, such as the times agents move on each step and the size of the infection area. However, the switch to Python means that we haven't been able to perfectly replicate the experiments; for example, the shapes of the infection curves are fairly accurate, but the time steps aren't perfectly replicated (our model takes much longer to produce the same behavior).
 
 ### Conclusion
 

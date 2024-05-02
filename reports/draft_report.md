@@ -35,7 +35,7 @@ We replicated the experiment that compares the rate of malware spread across thr
 
 In our replication, we tested out the random walk and random waypoint movements. We successfully replicated the general shapes of each curve, and we see that like the original experiment, the malware spreads extremely quickly with the random waypoint and much slower with the random walk. Our results of the replication are below:
 
-TODO: Map ticks to hours, run the other one with 80 squads
+TODO: run the other one with 80 squads
 
 ![](img/replication.png)
 
