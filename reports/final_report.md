@@ -47,7 +47,7 @@ In our replication, we tested out the random walk and random waypoint movements.
 
 **Figure 2a:** Spread of malware over time results from the paper by Brian Thompson and James Morris-King. Each hour corresponds to 1000 ticks. 
 
-<!-- ![](img/heirarchial.jpeg) -->
+![](img/heirarchial.png)
 
 
 **Figure 2b:**
