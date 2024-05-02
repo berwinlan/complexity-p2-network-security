@@ -14,27 +14,45 @@ This paper investigates how malware infiltrates mobile tactical networks given d
 
 ### Methodology
 
+First off, to simulate the behavior of mobile tactical networks, as part of the paper's design, each agent represents a squad, and squads are group together to form platoons, which makes agents cluster together when moving around. All agents active on the field are part of a company. 
+
+![](img/paper_grouping.jpeg)
+
+
+
 The three types of movement the paper investigated are the following:
 
 - Random walk: Squads randomly spawn and each squad takes a step in a random direction.
 - Random waypoint: Squads randomly spawn, choose a random point, and perform a walk toward that point until the squad has arrived. Squads are also independent here.
 - Hierarchical: Squads begin at their company’s outpost, which is a randomly selected but constant point. They stay there for a little bit, then go to a random waypoint as a company. Then, the Squads random walk independently, then the cycle repeats.
 
-We are replicating the experiment that compares the rate of malware spread across three different movement patterns.
+ We are replicating the experiment that compares the rate of malware spread across three different movement patterns. It is important to note that for each walk while squads randomly move in any direction, it is written so that squads generally are clustered by platoon.
+
 
 ![Random Walk Gif](img/walk.gif)
+
 **Figure 1:** Animation of random walk over time, focusing on a small window. Blue agents represent uninfected devices and red represent infected.
 
 <!-- ![](img/malware_spread.jpeg) -->
+
+
 
 ### Replication Results
 
 In our replication, we tested out the random walk and random waypoint movements. We successfully replicated the general shapes of each curve, and we see that like the original experiment, the malware spreads extremely quickly with the random waypoint and much slower with the random walk. Our results of the replication are below:
 
-![](img/replication.png)
-**Figure 2:** Spread of malware over time, where each 300 ticks corresponds to one hour. Similar to the paper, each travel method eventually infects every squad.
+<!-- ![](img/paper_spread.jpeg) -->
 
-Based on our results, we found that the random waypoint movement causes malware to spread more rapidly than the random walk movement. Although agents’ maximum step size is the same in all of the movement patterns, the agents end up interacting more with each other when they are moving to random waypoints.
+![](img/paper_spread.png)
+
+**Figure 2a:** Spread of malware over time results from the paper by Brian Thompson and James Morris-King. Each hour corresponds to 1000 ticks. 
+
+![](img/heirarchial.png)
+
+**Figure 2b:**
+Spread of malware over time, where each 1000 ticks corresponds to one hour. Similar to the paper, each travel method eventually hits the carrying capacity of 15 squads, which is the number of squads initialized.
+
+Based on our results, we found that the random waypoint movement causes malware to spread more rapidly than the random walk movement. Although agents’ maximum step size is the same in all of the movement patterns, the agents end up interacting more with each other when they are moving to random waypoints. We also attempted to do hierarchial and the results we got were a lot less accurate to the paper compared to random walk and waypoint, but it was accurate in that it was the second fastest spreading movement type. 
 
 ### Extension Results
 
@@ -45,6 +63,20 @@ For our extension we did a parameter sweep on different values for platoons and 
 
 While we were able to sweep fewer platoons than random walk, there is less of a clear trend for random waypoint. As the number of platoons increrases, the rate of infection doesn't necessarily increase with it. We think this is because random waypoint is less heavily influenced by how close agents spawn to one another, unlike random walk.
 
+The main parameter sweep we did was on random walk, where we increased the size of the squads and platoons to see how that would affect the spread. 
+
+![](img/sweep.png)
+
+**Figure 3** shows a parameter sweep with increasing number of platoons but stable number of squads being at 4 per platoon. The number of infected squads has been normalized to percentages so that all sweeps can be plotted on the same graph even with increasing total number of agents. The red dot on each sweep line signifies when the over 50% of squads have been infected. 
+
+We also did a quick parameter sweep with random waypoint but with increasing number of squads per platoon instead, but only up to 30 platoons as the computational time for random waypoint was significantly longer than random walk. 
+
+![](img/random_waypoint_sweep.png)
+
+**Figure 4** Shows a parameter sweep with increasing number of platoons but stable number of squads, being 4 squads per platoon. The red dot signifies for each swep when over 50% of the squads have been infected. 
+
+
+Overall it seems like increasing the number of platoons does not drastically change the behavior of infection, and rather slows or speeds at the rate that malware spreads. 
 ### Discussion
 
 One continuing cause for concern is adapting the paper from Repast Simphony to repast4py, the Python library. As a result, we’ve done a lot of tuning, such as the times agents move on each step and the size of the infection area. However, the switch to Python means that we haven't been able to perfectly replicate the experiments; for example, the shapes of the infection curves are fairly accurate, but the time steps aren't perfectly replicated (our model takes much longer to produce the same behavior).
