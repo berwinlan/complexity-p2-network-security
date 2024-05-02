@@ -4,6 +4,7 @@ Functions to plot the CSV output files created by the models.
 import pandas as pd
 import matplotlib.pyplot as plt
 
+TICKS_PER_HR = 300
 
 # Number of infected squads vs. time
 def num_infected(
@@ -19,7 +20,7 @@ def num_infected(
     # Sum `infected` Trues on each tick
     grouped = df.groupby("tick").sum().reset_index()
     plt.plot(
-        grouped["tick"], grouped["infected"], "--", color="orange", linewidth=3
+        grouped["tick"] / TICKS_PER_HR, grouped["infected"], "--", color="orange", linewidth=3
     )
 
     # Plot random waypoint
@@ -28,7 +29,7 @@ def num_infected(
     # Sum `infected` Trues on each tick
     grouped = df.groupby("tick").sum().reset_index()
     plt.plot(
-        grouped["tick"], grouped["infected"], ":", color="gray", linewidth=3
+        grouped["tick"] / TICKS_PER_HR, grouped["infected"], ":", color="gray", linewidth=3
     )
 
     if hierarchical_path:
@@ -38,13 +39,13 @@ def num_infected(
         # Sum `infected` Trues on each tick
         grouped = df.groupby("tick").sum().reset_index()
         plt.plot(
-            grouped["tick"], grouped["infected"], "-", color="tab:blue", linewidth=3
+            grouped["tick"] / TICKS_PER_HR, grouped["infected"], "-", color="tab:blue", linewidth=3
         )
 
     # Style plots
     plt.title("Spread of Malware over Time")
-    plt.xlim([-1000, 35000])
-    plt.xlabel("Ticks")
+    plt.xlim([-1000 / TICKS_PER_HR, 35000 / TICKS_PER_HR])
+    plt.xlabel("Time (in hours)")
     plt.ylabel("# of infected squads")
     if hierarchical_path:
         plt.legend(["Random walk", "Random waypoint", "Hierarchical"])
@@ -56,5 +57,4 @@ def num_infected(
 if __name__ == "__main__":
     random_walk = "out/agent_log_15.csv"
     random_waypoint = "out/agent_log_16.csv"
-    hierarchical = "out/agent_log_18.csv"
-    num_infected(random_walk, random_waypoint, hierarchical)
+    num_infected(random_walk, random_waypoint)
