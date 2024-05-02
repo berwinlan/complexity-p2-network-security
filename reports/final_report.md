@@ -41,7 +41,9 @@ Based on our results, we found that the random waypoint movement causes malware 
 For our extension we did a parameter sweep on different values for platoons and squads for different types of movement. The paper never delved into the impacts of different sizes for platoons and squads on malware spread, meaning that this extension will give us a clear idea how size impacts mobile network infection rate.
 
 ![](img/random_waypoint_sweep.png)
-**Figure 3:** Parameter sweep of 10, 20, and 30 platoons 
+**Figure 3:** Parameter sweep using random waypoint (the legend is incorrect) of 10, 20, and 30 platoons 
+
+While we were able to sweep fewer platoons than random walk, there is less of a clear trend for random waypoint. As the number of platoons increrases, the rate of infection doesn't necessarily increase with it. We think this is because random waypoint is less heavily influenced by how close agents spawn to one another, unlike random walk.
 
 ### Discussion
 
