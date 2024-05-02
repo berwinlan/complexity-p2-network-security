@@ -18,7 +18,7 @@ First off, to simulate the behavior of mobile tactical networks, as part of the 
 
 ![](img/paper_grouping.jpeg)
 
-
+Then, agents are simulated to move around on the map initially starting out as uninfected.There are certain parts of the map however that can infect squads, and infected squad contact can lead to other squads to become infected as well. 
 
 The three types of movement the paper investigated are the following:
 
@@ -50,16 +50,13 @@ In our replication, we tested out the random walk and random waypoint movements.
 ![](img/heirarchial.png)
 
 **Figure 2b:**
-Spread of malware over time, where each 1000 ticks corresponds to one hour. Similar to the paper, each travel method eventually hits the carrying capacity of 15 squads, which is the number of squads initialized.
+ Spread of malware over time, where each 1000 ticks corresponds to one hour. Similar to the paper, each travel method eventually hits the carrying capacity of 15 squads, which is the number of squads initialized.
 
 Based on our results, we found that the random waypoint movement causes malware to spread more rapidly than the random walk movement. Although agents’ maximum step size is the same in all of the movement patterns, the agents end up interacting more with each other when they are moving to random waypoints. We also attempted to do hierarchial and the results we got were a lot less accurate to the paper compared to random walk and waypoint, but it was accurate in that it was the second fastest spreading movement type. 
 
 ### Extension Results
 
-For our extension we did a parameter sweep on different values for platoons and squads for different types of movement. The paper never delved into the impacts of different sizes for platoons and squads on malware spread, meaning that this extension will give us a clear idea how size impacts mobile network infection rate.
-
-![](img/random_waypoint_sweep.png)
-**Figure 3:** Parameter sweep using random waypoint (the legend is incorrect) of 10, 20, and 30 platoons 
+### Extension Results
 
 While we were able to sweep fewer platoons than random walk, there is less of a clear trend for random waypoint. As the number of platoons increrases, the rate of infection doesn't necessarily increase with it. We think this is because random waypoint is less heavily influenced by how close agents spawn to one another, unlike random walk.
 
@@ -81,8 +78,17 @@ Overall it seems like increasing the number of platoons does not drastically cha
 
 One continuing cause for concern is adapting the paper from Repast Simphony to repast4py, the Python library. As a result, we’ve done a lot of tuning, such as the times agents move on each step and the size of the infection area. However, the switch to Python means that we haven't been able to perfectly replicate the experiments; for example, the shapes of the infection curves are fairly accurate, but the time steps aren't perfectly replicated (our model takes much longer to produce the same behavior).
 
+
+The original paper explored how different movement behaviors would impact spread. 
+
 ### Conclusion
 Based on our modeling results, we can conclude that movement patterns that cause agents to travel further across the space lead to higher rates of infection. Especially with lower agent density after random spawning, a random-walk-like strategy can cause them to stay in their own area and not interact with other agents. This impacts any organization that has a large number of agents traversing an area, and they can use this model to make informed decisions about how to avoid malware attacks.
+
+Overall, we successfully replicated 
+
+When looking at the at results from out initial replication, it is clear that there is a lot of tweaking and tuning that is required for us if we wanted to exactly replicate the results of the paper. The paper did not give any specific dimensions or parameter values, so we had to guess the size of the map as well as the number of platoons. This probably affected the results as we had an insanely large map initially (886x886) which led to infection rates being much slower than anticipated. After shrinking the map to 500x500 for the parameter sweeps it was clear that the timesteps needed to show full infection was a lot shorter than what we first started with. However, we were able to replicate the general behavior of each movement which tells us that our foundational logic is solid. The parameter sweep also reinforced 
+
+Another factor that impacted or replication results and continuing cause for concern is adapting the paper from Repast Simphony to repast4py, the Python library. As a result, we’ve done a lot of tuning, such as the times agents move on each step and the size of the infection area.
 
 ### Annotated Bibliography
 

@@ -73,15 +73,15 @@ class Squad(core.Agent):
             self.is_infected,
         )
 
-    def step(self, grid: space.SharedGrid) -> None:
+    def step(self, grid: space.SharedGrid, infect_chance=1) -> None:
         """
         Walks the agent, then checks for infection.
         """
         match grid.spread:
             case "random_walk":
-                self._random_walk(grid)
+                self._random_walk(grid, infect_chance)
             case "random_waypoint":
-                self._random_waypoint(grid)
+                self._random_waypoint(grid, infect_chance)
             case "hierarchical":
                 self._hierarchical(grid)
             case _:
@@ -103,7 +103,7 @@ class Squad(core.Agent):
             meet_log.max_meets = num_here
         self.meet_count += num_here
 
-    def _random_walk(self, grid: space.SharedGrid) -> None:
+    def _random_walk(self, grid: space.SharedGrid, infect_chance=1) -> None:
         """
         randomly chooses an offset from its current location (self.pt),
         adds those offsets to its current location to create a new location,
@@ -121,7 +121,7 @@ class Squad(core.Agent):
             )
 
             # Checks for infection after each step.
-            self._infect(grid)
+            self._infect(grid, infect_chance)
 
     def _random_waypoint(self, grid: space.SharedGrid, waypoint=None) -> None:
         """
@@ -153,7 +153,7 @@ class Squad(core.Agent):
             dpt(int(self.pt.x + x_movement), int(self.pt.y + y_movement), 0),
         )
 
-    def _hierarchical(self, grid: space.SharedGrid):
+    def _hierarchical(self, grid: space.SharedGrid, infect_chance=1):
         scale = 1000
         match self.hierarchical:
             case None:
@@ -191,9 +191,9 @@ class Squad(core.Agent):
                 self._random_waypoint(grid, self.platoon.outpost)
                 if self._arrived(grid, self.platoon.outpost):
                     self.hierarchical = "HOLD"
-        self._infect(grid)
+        self._infect(grid, infect_chance)
 
-    def _infect(self, grid: space.SharedGrid) -> None:
+    def _infect(self, grid: space.SharedGrid,  infectedpercent=1) -> None:
         """
         Infect agents.
         """
@@ -208,7 +208,7 @@ class Squad(core.Agent):
         # If any of them are infected, this agent is infected
         any_infected = any(agent.is_infected for agent in agents_here)
         if any_infected:
-            self.is_infected = True
+            self.is_infected = np.random.rand() < infectedpercent
 
     def _arrived(self, grid: space.SharedGrid, dpt: dpt):
         """

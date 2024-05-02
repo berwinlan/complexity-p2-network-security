@@ -3,7 +3,7 @@ world.width: 500  # m
 InfectionRegion.height: 300
 InfectionRegion.width: 300
 
-stop.at: 50000    # ticks
+stop.at: 10000    # ticks
 
 # Parameters for spawning agents
 platoon.count: 16
@@ -15,5 +15,5 @@ meet_log_file: './out/meet_log.csv'
 agent_log_file: './out/agent_log.csv'
 
 # Parameters for movement types
-spread: 'random_waypoint' # 'random_walk' | 'random_waypoint' | 'hierarchical'
+spread: 'random_walk' # 'random_walk' | 'random_waypoint' | 'hierarchical'
 step_size: 1

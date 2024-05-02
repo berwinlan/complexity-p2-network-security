@@ -188,7 +188,7 @@ class Model:
             platoon.move()
 
         for agent in self.context.agents():
-            agent.step(self.grid)
+            agent.step(self.grid, 0.1)
 
         # Synchronize across processes. (Not used because
         # we run on only one thread.)
