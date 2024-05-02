@@ -38,7 +38,7 @@ Based on our results, we found that the random waypoint movement causes malware 
 
 ### Extension Results
 
-For our extension we plan to do a parameter sweep on different values for platoons and squads for different types of movement. Currently we have the infrastructure built for a parameter sweep, and we just need to log all the data and visualize it. The paper never delved into the impacts of different sizes for platoons and squads on malware spread, meaning that this extension will give us a clear idea how size impacts mobile network infection rate.
+For our extension we did a parameter sweep on different values for platoons and squads for different types of movement. The paper never delved into the impacts of different sizes for platoons and squads on malware spread, meaning that this extension will give us a clear idea how size impacts mobile network infection rate.
 
 ![](img/random_waypoint_sweep.png)
 **Figure 3:** Parameter sweep of 10, 20, and 30 platoons 
